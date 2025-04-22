@@ -1,0 +1,50 @@
+﻿@model IEnumerable<WebBanGame.Models.KhachHang>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<h1>Danh Sách Khách Hàng</h1>
+<p>
+    <a asp-action="Create"  class="btn btn-primary">Thêm Mới Khách Hàng</a>
+</p>
+<div class="row">
+                    <div class="col-sm-12">
+                        <div class="white-box">
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">Tên Khách Hàng</th>
+                                            <th class="border-top-0">Ngày Sinh</th>
+                                            <th class="border-top-0">Điện Thoại</th>
+                                            <th class="border-top-0">Email</th>
+                                            <th class="border-top-0">Địa Chỉ</th>
+                                            <th class="border-top-0">Ngày Tạo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                       {
+                                            <tr>
+                                            <td>@item.TenKh</td>
+                                            <td>@item.Ngaysinh.ToString("dd/MM/yyyy")</td>
+                                            <td> @item.Phone</td>
+                                           <td> @item.Email</td>
+                                           <td> @item.Diachi</td>
+                                           <td> @item.CreateDate</td>
+                                            <td> 
+                                                <a asp-action="Edit" asp-route-id="@item.MaKh" class="btn btn-primary">Sửa</a>
+                                                <a asp-action="Details" asp-route-id="@item.MaKh" class="btn btn-primary">Xem</a>
+                                                <a asp-action="Delete" asp-route-id="@item.MaKh" class="btn btn-danger">Xóa</a>
+                                            </td>
+                                        </tr>
+                                       }
+                                       
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+

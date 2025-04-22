@@ -1,0 +1,47 @@
+﻿@model IEnumerable<WebBanGame.Models.DanhMucSp>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Danh Sách Danh Mục</h1>
+
+<p>
+    <a asp-action="Create"  class="btn btn-primary">Tạo Danh Mục Mới</a>
+</p>
+<div class="row">
+                    <div class="col-sm-12">
+                        <div class="white-box">
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">Tên Danh Mục</th>
+                                            <th class="border-top-0">Mô Tả Danh Mục</th>
+                                            <th class="border-top-0">Hiển Thị</th>
+                                            <th class="border-top-0">Ảnh</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                       {
+                                            <tr>
+                                            <td>@item.TenDm</td>
+                                            <td>@item.MoTaDm</td>
+                                            <td> @Html.DisplayFor(modelItem => item.TrangThai)</td>
+                                            <td><img src="@item.AnhDm" style="width:30px;"/></td>
+                                            <td> 
+                                                <a asp-action="Edit" asp-route-id="@item.MaDm" class="btn btn-primary">Sửa</a>
+                                                <a asp-action="Details" asp-route-id="@item.MaDm" class="btn btn-primary">Xem</a>
+                                                <a asp-action="Delete" asp-route-id="@item.MaDm" class="btn btn-danger">Xóa</a>
+                                            </td>
+                                        </tr>
+                                       }
+                                       
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>

@@ -1,0 +1,75 @@
+﻿@model IEnumerable<WebBanGame.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+                            <head>
+                                <meta charset='utf-8'>
+                                <meta name='viewport' content='width=device-width, initial-scale=1'>
+                                <title>Snippet - BBBootstrap</title>
+                                <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css' rel='stylesheet'>
+                                <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+                                <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+                                <style>::-webkit-scrollbar {
+                                  width: 8px;
+                                }
+                                /* Track */
+                                ::-webkit-scrollbar-track {
+                                  background: #f1f1f1; 
+                                }
+                                 
+                                /* Handle */
+                                ::-webkit-scrollbar-thumb {
+                                  background: #888; 
+                                }
+                                
+                                /* Handle on hover */
+                                ::-webkit-scrollbar-thumb:hover {
+                                  background: #555; 
+                                } body{background:#eee}.ratings i{font-size: 16px;color: red}.strike-text{color: red;text-decoration: line-through}.product-image{width: 100%}.dot{height: 7px;width: 7px;margin-left: 6px;margin-right: 6px;margin-top: 3px;background-color: blue;border-radius: 50%;display: inline-block}.spec-1{color: #938787;font-size: 15px}h5{font-weight: 400}.para{font-size: 16px}</style>
+                                </head>
+<body className='snippet-body'>
+    <div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-center row">
+        <div class="col-md-10">
+            @{
+                var gameView = Model.Where(x=>x.TrangThai == true);
+            }
+            @foreach (var item in gameView)
+           {
+               <div class="row p-2 bg-white border rounded mt-2">
+                <div class="col-md-3 mt-1" style="margin:auto !important;"><img class="img-fluid img-responsive rounded product-image" src="@item.AnhSp" style="width:150px;"></div>
+                <div class="col-md-6 mt-1">
+                    <h5>@item.TenSp</h5>
+                    <div class="d-flex flex-row">
+                        <div class="ratings mr-2"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div><span>310</span>
+                    </div>
+                    <div class="mt-1 mb-1 spec-1"><span>Game @item.MaDmNavigation.TenDm</span></div>
+                    <p class="text-justify text-truncate para mb-0">@item.MotaSp<br><br></p>
+                </div>
+                <div class="align-items-center align-content-center col-md-3 border-left mt-1">
+                    <div class="d-flex flex-row align-items-center">
+                        <h5 class="mr-1" style="font-weight:900;">@item.GiaSp.ToString("#,##0") VNĐ</h5><span class="strike-text">@item.GiaSp.ToString("#,##0") VNĐ</span>
+                    </div>
+                    <small class="text-success">Bán chạy</small>
+                    <div class="d-flex flex-column mt-4">
+                        <a asp-action="Details" asp-route-id="@item.MaSp" class="btn btn-primary btn-sm" st type="button">Xem</a>
+                        <button class="btn btn-outline-primary btn-sm mt-2" type="button">Mua Ngay</button></div>
+                </div>
+            </div>
+           }
+            
+
+        </div>
+    </div>
+</div>
+<script type='text/javascript' src='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js'></script>
+<script type='text/javascript'>var myLink = document.querySelector('a[href="#"]');
+myLink.addEventListener('click', function(e) {
+e.preventDefault();
+});</script>
+                            
+</body>

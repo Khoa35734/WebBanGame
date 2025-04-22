@@ -1,0 +1,55 @@
+﻿@model WebBanGame.Models.KhachHang
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Chi Tiết</h1>
+
+<div>
+    <h4>Khách Hàng</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Tên Khách Hàng
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TenKh)
+        </dd>
+        <dt class = "col-sm-2">
+            Địa Chỉ:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Diachi)
+        </dd>
+        <dt class = "col-sm-2">
+            Ngày Sinh:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Ngaysinh)
+        </dd>
+        <dt class = "col-sm-2">
+            Điện Thoại:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            Ngày Tạo:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreateDate)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.MaKh" class="btn btn-primary">Sửa</a> 
+    <a asp-action="Index">Về trang danh sách</a>
+</div>
