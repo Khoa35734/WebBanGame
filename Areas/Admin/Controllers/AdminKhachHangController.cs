@@ -19,7 +19,7 @@ namespace WebBanGame.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Admin/AdminKhachHang
+        // GET: Admin/AdminKhachHan
         public async Task<IActionResult> Index()
         {
             return View(await _context.KhachHangs.ToListAsync());
