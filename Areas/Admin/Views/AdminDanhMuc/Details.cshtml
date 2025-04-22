@@ -1,0 +1,43 @@
+﻿@model WebBanGame.Models.DanhMucSp
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Chi Tiết</h1>
+
+<div>
+    <h4>Danh Mục</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+           Tên Danh Mục:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TenDm)
+        </dd>
+        <dt class = "col-sm-2">
+            Ảnh:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AnhDm)
+        </dd>
+        <dt class = "col-sm-2">
+            Mô Tả Danh Mục
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MoTaDm)
+        </dd>
+        <dt class = "col-sm-2">
+            Trạng Thái Hiển Thị
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TrangThai)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.MaDm" class="btn btn-primary">Sửa</a>
+    <a asp-action="Index">Về trang danh sách</a>
+</div>

@@ -1,0 +1,143 @@
+﻿@{
+	WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
+	var dannMuc = db.DanhMucSps.Where(x => x.TrangThai == true); 
+}
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Adventure Gaming</title>
+<link href="~/css/bootstrap.css" rel='stylesheet' type='text/css' />
+<!-- jQuery (necessary JavaScript plugins) -->
+<script src="~/js/bootstrap.js"></script>
+<!-- Custom Theme files -->
+<link href="~/css/style.css" rel='stylesheet' type='text/css' />
+<link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="Adventure Gaming  Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template, 
+Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+
+<script src="~/js/jquery.min.js"></script>
+
+</head>
+<body>
+<!-- header -->
+<div class="top-banner">
+	 <div class="header">
+		 <div class="container">
+			 <div class="headr-left">
+				 <div class="social">							
+						<a href="#"><i class="facebook"></i></a>
+						<a href="#"><i class="twitter"></i></a>
+						<a href="#"><i class="gplus"></i></a>	
+						<a href="#"><i class="pin"></i></a>	
+						<a href="#"><i class="youtube"></i></a>	
+				 </div>
+				 <div class="search">
+					 <form>
+						 <input type="submit" value="">
+						 <input type="text" value="" placeholder="Search...">					 
+					 </form>
+				 </div>
+				 <div class="clearfix"></div>
+			 </div>
+			 <div class="headr-right">
+				 <div class="details">
+					 <ul>
+							<li><a href="/login" class="btn btn-primary btn-sm">Đăng nhập</a></li>
+							<li><a href="/register" class="btn btn-success btn-sm">Đăng ký</a></li>
+
+					 </ul>
+				 </div>
+			 </div>
+			 <div class="clearfix"></div>
+		 </div>
+	 </div>
+	 <!--banner-info-->	
+	 <div class="banner-info">
+		  <div class="container">
+			  <div class="logo">
+					 <h1><a asp-action="Index" asp-controller="Home">WEBGAMESTORE</a></h1>
+			  </div>
+			 <div class="top-menu">
+				 <span class="menu"></span>
+					<ul class="nav1">
+						 <li class="active"><a asp-action="Index" asp-controller="Home">HOME</a></li>
+						 <li><a asp-action="Index" asp-controller="SanPham">GAME HOT</a></li>
+						 <li><a href="reviews.html">ĐÁNH GIÁ</a></li>
+						 <li><a href="typo.html">TIN TỨC</a></li>
+						 <li><a href="gallery.html">THƯ VIỆN</a></li>
+						 <li><a href="contact.html">LIÊN HỆ</a></li>
+				  </ul>
+			 </div>	
+	 <!-- script-for-menu -->
+						<script>
+							 $( "span.menu" ).click(function() {
+							$( "ul.nav1" ).slideToggle( 300, function() {
+							// Animation complete.
+								});
+								});
+						</script>
+					<!-- /script-for-menu -->
+			 
+			 <div class="clearfix"></div>
+		 </div>
+	 </div>
+	 <div class="banner">		  			
+		<div class="bnr2">						  
+	   </div>
+</div>
+
+	@RenderBody()
+
+
+<!-- footer -->
+<div class="footer">
+	 <div class="container">
+		 <div class="footer-grids">
+			 <div class="col-md-3 ftr-info">
+				 <h3>Giới Thiệu</h3>
+				 <p>Shop Bán Game Bản Quyền<br /> Uy Tín Nhất Hiện Nay</p>
+			 </div>
+			 <div class="col-md-3 ftr-grid">
+				 <h3>Danh Mục</h3>
+				 <ul class="ftr-list">
+					 @foreach (var item in dannMuc)
+					{
+						<li><a href="#">@item.TenDm</a></li>
+					}
+					 
+					
+				 </ul>				 
+			 </div>
+			 <div class="col-md-3 ftr-grid">
+				 <h3>Platform</h3>
+				 <ul class="ftr-list">
+					 <li><a href="#">Pc</a></li>
+					 <li><a href="#">Ps4</a></li>
+					 <li><a href="#">XBOX 360</a></li>					 
+					 <li><a href="#">XBOX ONE</a></li>
+					 <li><a href="#">PSP</a></li>
+				 </ul>				 
+			 </div>
+			 <div class="col-md-3 ftr-grid">
+				 <h3>Thông Tin</h3>
+				 <ul class="ftr-list">	
+					 <li><a href="#">Liên Hệ</a></li>
+					 <li><a href="#">Đánh Giá</a></li>
+					 <li><a href="#">Địa Chỉ</a></li>
+					 <li><a href="#">Hỗ Trợ</a></li>					 
+				 </ul>				 
+			 </div>		
+			 <div class="clearfix"></div>
+		 </div>
+	 </div>
+</div>
+<div class="copywrite">
+	 <div class="container">
+		 <p> © 2025 Store Game | Liên hệ ngay: 0764483295</p>
+	 </div>
+</div>
+</body>
+</html>

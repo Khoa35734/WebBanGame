@@ -1,0 +1,151 @@
+﻿
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- banner -->
+	 <!-- Slider-starts-Here -->
+	 <script src="~/js/responsiveslides.min.js"></script>
+	 <script>
+		$(function () {
+		  $("#slider").responsiveSlides({
+			auto:true,
+			nav: false,
+			speed: 500,
+			namespace: "callbacks",
+			pager:true,
+		  });
+		});
+		
+	   </script>
+	 <div class="slider">
+		  <div class="callbacks_container">
+			  <ul class="rslides" id="slider">
+				
+					<div class="slid banner1">
+						  <div class="caption">
+								<h3>GAME STORE - UY TÍN - NHANH GỌN</h3>
+								<p>CHÀO MỪNG BẠN ĐẾN VỚI WEBSITE BÁN GAME CỦA CHÚNG TÔI</p>
+						  </div>
+					</div>
+				
+				
+					 <div class="slid banner2">	
+						  <div class="caption">
+								<h3>God of war - kratos - sony santa monica</h3>
+								<p>CHUẨN BỊ HÒA MÌNH VÀO THẾ GIỚI MỞ HUYỀN BÍ - BẠN ĐÃ SẴN SÀNG CHƯA NÀO</p>
+						  </div>
+					 </div>
+				
+				
+					<div class="slid banner3">	
+						<div class="caption">
+							<h3>Battlefield 4 - game - explosion - digital illusions</h3>
+							<p>TRÒ CHƠI NÀY CÓ THỂ CHỨA NỘI DUNG KHÔNG PHÙ HỢP CHO MỌI LỨA TUỔI, HOẶC CÓ THỂ KHÔNG ĐƯỢC CHỈ ĐỊNH ĐỂ XEM TẠI CÔNG VIỆC.</p>
+						</div>
+					</div>
+				
+			  </ul>
+		 </div>
+	 </div>
+
+<!-- content -->
+<div class="content">
+	 <div class="container">
+		 <div class="top-games">
+			 <h3>Top Games Hot</h3>
+			 <span></span>
+		 </div>
+		 <div class="top-game-grids">
+			 <ul id="flexiselDemo1">
+				@{
+					WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
+					var gameHot = db.SanPhams.Where(x => x.BestSeller == true);
+				}
+				@foreach (var item in gameHot)
+			   {
+				   <li>
+					   <a asp-action="Details" asp-controller="SanPham" asp-route-id="@item.MaSp">
+					 <div class="game-grid">
+						 <h4>@item.TenSp</h4>
+						 <p>@item.GiaSp.ToString("#,##0") VNĐ</p>
+						 <img src="@item.AnhSp" class="img-responsive" alt=""/>
+					 </div>	
+					 </a>
+				 </li>
+			   }
+				 
+			 </ul>
+			<!-- game list section -->
+			<div class="content">
+				<div class="container">
+					<div class="top-games">
+						<h3>Game</h3>
+						<span></span>
+					</div>
+					<div class="top-game-grids">
+						<div class="row">
+							@{
+								var danhSachGame = db.SanPhams.Take(4).ToList(); // Lấy 4 game đầu tiên
+							}
+							@foreach (var game in danhSachGame)
+							{
+								<div class="col-md-3 col-sm-6 mb-4">
+									<div class="game-grid">
+										<a asp-action="Details" asp-controller="SanPham" asp-route-id="@game.MaSp">
+											<img src="@game.AnhSp" class="img-responsive" alt="@game.TenSp" />
+											<h4 class="mt-2">@game.TenSp</h4>
+											<p>@game.GiaSp.ToString("#,##0") VNĐ</p>
+										</a>
+									</div>
+								</div>
+							}
+						</div>
+						<div class="text-center mt-4">
+							<a class="btn btn-primary" asp-controller="SanPham" asp-action="Index">Xem tất cả</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			 <script type="text/javascript">
+			 $(window).load(function() {			
+			  $("#flexiselDemo1").flexisel({
+				visibleItems: 4,
+				animationSpeed: 1000,
+				autoPlay: true,
+				autoPlaySpeed: 3000,    		
+				pauseOnHover:true,
+				enableResponsiveBreakpoints: true,
+				responsiveBreakpoints: { 
+					portrait: { 
+						changePoint:480,
+						visibleItems: 1
+					}, 
+					landscape: { 
+						changePoint:640,
+						visibleItems: 2
+					},
+					tablet: { 
+						changePoint:768,
+						visibleItems: 3
+					}
+				}
+			});
+			});
+			</script>
+			<script type="text/javascript" src="~/js/jquery.flexisel.js"></script>	
+		 </div>
+	 </div>
+</div>
+
+<!-- poster -->
+<div class="poster">
+	 <div class="container">
+		 <div class="poster-info">
+			 <h3>Đắm chìm trong thế giới game li kì đầy màu sắc.</h3>
+			 <p>Web Game Bản Quyền Uy Tín Số 1 Việt Nam</p>
+			  <a class="hvr-bounce-to-bottom" href="reviews.html">Xem Thêm</a>
+		 </div>
+	 </div>
+</div>

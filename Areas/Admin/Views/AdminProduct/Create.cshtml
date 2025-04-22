@@ -1,0 +1,80 @@
+﻿@model WebBanGame.Models.SanPham
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Thêm Mới</h1>
+
+<h4>Game</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="MaDm" class="control-label">Chọn thể loại game</label>
+                <select asp-for="MaDm" class ="form-control" asp-items="ViewBag.MaDm"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenSp" class="control-label">Tên Game</label>
+                <input asp-for="TenSp" class="form-control" />
+                <span asp-validation-for="TenSp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnhSp" class="control-label">Link Ảnh Game</label>
+                <input asp-for="AnhSp" class="form-control" />
+                <span asp-validation-for="AnhSp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VideoSp" class="control-label">Link Video Game</label>
+                <input asp-for="VideoSp" class="form-control" />
+                <span asp-validation-for="VideoSp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaSp" class="control-label">Giá</label>
+                <input asp-for="GiaSp" class="form-control" />
+                <span asp-validation-for="GiaSp" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="TrangThai" /> Hiển Thị Game
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="BestSeller" /> Game Bán Chạy
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreateDate" class="control-label">Ngày Tạo</label>
+                <input asp-for="CreateDate" class="form-control" />
+                <span asp-validation-for="CreateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NgaySua" class="control-label">Ngày Sửa</label>
+                <input asp-for="NgaySua" class="form-control" />
+                <span asp-validation-for="NgaySua" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MotaSp" class="control-label">Mô Tả Game</label>
+                <input asp-for="MotaSp" class="form-control" />
+                <span asp-validation-for="MotaSp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LinkDownGame" class="control-label">Link Tải Game</label>
+                <input asp-for="LinkDownGame" class="form-control" />
+                <span asp-validation-for="LinkDownGame" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Thêm Mới" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
