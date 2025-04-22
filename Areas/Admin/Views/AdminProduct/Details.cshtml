@@ -1,0 +1,84 @@
+﻿@model WebBanGame.Models.SanPham
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Chi Tiết Game</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Tên Game:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TenSp)
+        </dd>
+        <dt class = "col-sm-2">
+            Ảnh:
+        </dt>
+        <dd class = "col-sm-10">
+             <img src=" @Html.DisplayFor(model => model.AnhSp)" style="width:100px;" />
+        </dd>
+        <dt class = "col-sm-2">
+           Video Game:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.VideoSp)
+        </dd>
+        <dt class = "col-sm-2">
+            Giá Game:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GiaSp)
+        </dd>
+        <dt class = "col-sm-2">
+           Đang được hiển thị
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TrangThai)
+        </dd>
+        <dt class = "col-sm-2">
+            Game bán chạy
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BestSeller)
+        </dd>
+        <dt class = "col-sm-2">
+           Ngày Tạo:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreateDate)
+        </dd>
+        <dt class = "col-sm-2">
+           Ngày Chỉnh Sửa:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NgaySua)
+        </dd>
+        <dt class = "col-sm-2">
+            Mô Tả Game:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MotaSp)
+        </dd>
+        <dt class = "col-sm-2">
+            Link Tải Game:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LinkDownGame)
+        </dd>
+        <dt class = "col-sm-2">
+           Tên Danh Mục:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MaDmNavigation.TenDm)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.MaSp" class="btn btn-primary">Sửa</a> 
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,139 @@
+﻿@model IEnumerable<WebBanGame.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@*<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TenSp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AnhSp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VideoSp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GiaSp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrangThai)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BestSeller)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NgaySua)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MotaSp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LinkDownGame)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaDmNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenSp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AnhSp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VideoSp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GiaSp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrangThai)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BestSeller)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NgaySua)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MotaSp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LinkDownGame)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaDmNavigation.TenDm)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MaSp">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MaSp">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MaSp">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>*@
+<h1>Danh Sách Sản Phẩm</h1>
+<p>
+    <a asp-action="Create"  class="btn btn-primary">Thêm Game Mới</a>
+</p>
+<div class="row">
+                    <div class="col-sm-12">
+                        <div class="white-box">
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">Tên Game</th>
+                                            <th class="border-top-0">Giá</th>
+                                            <th class="border-top-0">Danh Mục Game</th>
+                                            <th class="border-top-0">Đã Hiển Thị</th>
+                                            <th class="border-top-0">Game Bán Chạy</th>
+                                            <th class="border-top-0">Ngày Tạo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                       {
+                                            <tr>
+                                            <td><img src="@item.AnhSp" style="width:40px;"/>@item.TenSp</td>
+                                            <td>@item.GiaSp</td>
+                                            <td> @item.MaDmNavigation.TenDm</td>
+                                           <td> @Html.DisplayFor(modelItem => item.TrangThai)</td>
+                                           <td> @Html.DisplayFor(modelItem => item.BestSeller)</td>
+                                           <td> @item.CreateDate</td>
+                                            <td> 
+                                                <a asp-action="Edit" asp-route-id="@item.MaSp" class="btn btn-primary">Sửa</a>
+                                                <a asp-action="Details" asp-route-id="@item.MaSp" class="btn btn-primary">Xem</a>
+                                                <a asp-action="Delete" asp-route-id="@item.MaSp" class="btn btn-danger">Xóa</a>
+                                            </td>
+                                        </tr>
+                                       }
+                                       
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>

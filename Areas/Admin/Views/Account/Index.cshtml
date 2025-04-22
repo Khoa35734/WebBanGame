@@ -1,0 +1,50 @@
+﻿@model IEnumerable<WebBanGame.Models.AccountAdmin>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+<h1>Danh Sách Tài Khoản</h1>
+
+<p>
+    <a asp-action="Create"  class="btn btn-primary">Tạo Tài Khoản Mới</a>
+</p>
+<div class="row">
+                    <div class="col-sm-12">
+                        <div class="white-box">
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">Tên Tài Khoản</th>
+                                            <th class="border-top-0">Tên Người Dùng</th>
+                                            <th class="border-top-0">Phone</th>
+                                            <th class="border-top-0">Email</th>
+                                            <th class="border-top-0">Ngày Tạo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                       {
+                                            <tr>
+                                            <td>@item.TaiKhoan</td>
+                                            <td>@item.FullName</td>
+                                            <td> @item.Phone</td>
+                                            <td>@item.Email</td>
+                                            <td>@item.CreateDate</td>
+                                            <td> 
+                                                <a asp-action="Edit" asp-route-id="@item.AccountId" class="btn btn-primary">Sửa</a>
+                                                <a asp-action="Details" asp-route-id="@item.AccountId" class="btn btn-primary">Xem</a>
+                                                <a asp-action="Delete" asp-route-id="@item.AccountId" class="btn btn-danger">Xóa</a>
+                                            </td>
+                                        </tr>
+                                       }
+                                       
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
