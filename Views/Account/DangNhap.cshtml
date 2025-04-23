@@ -1,8 +1,37 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-    ViewData["Title"] = "Đăng nhập";
+﻿@{
+    ViewData["Title"] = "Đăng Nhập";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<head>
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<div id="login-section">
+    <h2>Đăng Nhập</h2>
+
+    <!-- Thông báo -->
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <p style="color: red;">@ViewBag.ErrorMessage</p>
+    }
+    @if (!string.IsNullOrEmpty(ViewBag.LogoutMessage))
+    {
+        <div class="alert alert-success">
+            @ViewBag.LogoutMessage
+        </div>
+    }
+
+    <!-- Form đăng nhập -->
+    <form method="post" action="/Account/Login">
+        @Html.AntiForgeryToken()
+
+        <input type="text" name="username" id="username" placeholder="Tên đăng nhập" required />
+        <input type="password" name="password" id="password" placeholder="Mật khẩu" required />
+        <button type="submit">Đăng Nhập</button>
+    </form>
+
+    <!-- Link chuyển qua trang đăng ký -->
+    <p>Chưa có tài khoản? <a href="/Account/DangKy">Đăng ký</a></p>
+</div>
