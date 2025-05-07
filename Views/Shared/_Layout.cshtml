@@ -1,10 +1,181 @@
 ﻿@{
 	WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
 	var dannMuc = db.DanhMucSps.Where(x => x.TrangThai == true); 
+	var soDuClaim = User.FindFirst("SoDuTk")?.Value;
+	decimal soDu = decimal.TryParse(soDuClaim, out var tempSoDu) ? tempSoDu : 0;
 }
 <!DOCTYPE HTML>
+
 <html>
 <head>
+	<style>
+	.user-dropdown {
+	position: relative;
+	display: inline-block;
+	}
+
+	.user-dropdown-content {
+	display: none;
+	position: absolute;
+	right: 0;
+	background-color: #fff;
+	min-width: 160px;
+	box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+	z-index: 1000;
+	border-radius: 5px;
+	padding: 10px 0;
+	}
+
+	.user-dropdown-content a {
+	color: #000; /* Đổi thành đen hoàn toàn */
+	padding: 10px 20px;
+	text-decoration: none;
+	display: block;
+	transition: background 0.2s;
+	font-weight: 500; /* Tuỳ chọn: làm chữ đậm hơn nếu muốn */
+	}
+
+	.user-dropdown-content a:hover {
+	background-color: #f1f1f1;
+	color: #000; /* Đảm bảo hover vẫn là đen */
+	}
+
+	.user-dropdown:hover .user-dropdown-content {
+	display: block;
+	}
+		/* Header background */
+		.header-style-1 {
+			background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+			color: white;
+			font-family: 'Segoe UI', sans-serif;
+		}
+
+		.top-bar {
+			background-color: #1e2a38;
+			padding: 5px 0;
+			color: #fff;
+			font-size: 14px;
+		}
+
+		.header-top-inner .cnt-account ul li {
+			display: inline-block;
+			margin-right: 15px;
+		}
+
+			.header-top-inner .cnt-account ul li a,
+			.header-top-inner .cnt-account ul li button {
+				color: #ccc;
+				transition: color 0.3s;
+				background: none;
+				border: none;
+				cursor: pointer;
+				font-size: 14px;
+			}
+
+				.header-top-inner .cnt-account ul li a:hover,
+				.header-top-inner .cnt-account ul li button:hover {
+					color: #ffffff;
+					text-decoration: underline;
+				}
+
+		.main-header {
+			background-color: #263545;
+			padding: 10px 0;
+		}
+
+		.logo img {
+			max-height: 60px;
+		}
+
+		.search-area {
+			background-color: #1e2a38;
+			border-radius: 6px;
+			padding: 10px;
+			display: flex;
+			align-items: center;
+		}
+
+		.search-field {
+			width: 500%;
+			padding: 8px 50px;
+			border: none;
+			border-radius: 4px;
+			margin-left: 10px;
+		}
+
+		.search-button {
+			width: 35px;
+			height: 35px;
+			background: url('/images/search-icon.png') no-repeat center center;
+			background-size: 20px 20px;
+			display: inline-block;
+		}
+
+		.header-nav {
+			background-color: #14212f;
+		}
+
+		.navbar-nav > li > a {
+			color: #ccc !important;
+			padding: 15px 20px;
+			font-weight: 500;
+			transition: background 0.3s, color 0.3s;
+		}
+
+			.navbar-nav > li > a:hover,
+			.navbar-nav > li.active > a {
+				background-color: #0e1a24;
+				color: #fff !important;
+			}
+
+		.special-menu a {
+			color: #ffcc00 !important;
+			font-weight: bold;
+		}
+
+			.special-menu a:hover {
+				color: #fff700 !important;
+			}
+
+		.search-area {
+			background-color: #1e2a38;
+			border-radius: 6px;
+			padding: 10px;
+		}
+
+			.search-area .control-group {
+				display: flex;
+				width: 100%;
+				gap: 10px;
+			}
+
+		.search-field {
+			width: 100%;
+			padding: 10px 15px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 14px;
+			color: black; /* chữ màu đen */
+		}
+
+		.search-button {
+			display: inline-block;
+			width: 45px;
+			height: 45px;
+			background-color: #ffcc00;
+			border-radius: 4px;
+			background-image: url('/images/search-icon.png'); /* hoặc dùng Font Awesome */
+			background-repeat: no-repeat;
+			background-position: center;
+			background-size: 20px 20px;
+			transition: background-color 0.3s;
+		}
+
+			.search-button:hover {
+				background-color: #ffaa00;
+			}
+	</style>
+
 <title>Adventure Gaming</title>
 <link href="~/css/bootstrap.css" rel='stylesheet' type='text/css' />
 <!-- jQuery (necessary JavaScript plugins) -->
@@ -19,75 +190,134 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 
 <script src="~/js/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 <body>
 <!-- header -->
 <div class="top-banner">
-	 <div class="header">
-		 <div class="container">
-			 <div class="headr-left">
-				 <div class="social">							
-						<a href="#"><i class="facebook"></i></a>
-						<a href="#"><i class="twitter"></i></a>
-						<a href="#"><i class="gplus"></i></a>	
-						<a href="#"><i class="pin"></i></a>	
-						<a href="#"><i class="youtube"></i></a>	
-				 </div>
-				 <div class="search">
-					 <form>
-						 <input type="submit" value="">
-						 <input type="text" value="" placeholder="Search...">					 
-					 </form>
-				 </div>
-				 <div class="clearfix"></div>
-			 </div>
-			 <div class="headr-right">
-				 <div class="details">
-					 <ul>
-							<li><a href="/login" class="btn btn-primary btn-sm">Đăng nhập</a></li>
-							<li><a href="/register" class="btn btn-success btn-sm">Đăng ký</a></li>
+		<header class="header-style-1">
 
-					 </ul>
-				 </div>
-			 </div>
-			 <div class="clearfix"></div>
-		 </div>
-	 </div>
+			<!-- ============================================== TOP MENU ============================================== -->
+			<div class="top-bar animate-dropdown">
+				<div class="container">
+					<div class="header-top-inner">
+						<div class="cnt-account" style="text-align: right;">
+							<ul class="list-unstyled">
+								@if (User.Identity.IsAuthenticated)
+								{
+									<li class="user-dropdown">
+										<a href="#"><i class="icon fa fa-user"></i>Xin chào, @User.Identity.Name</a>
+										<div class="user-dropdown-content">
+											<a href="/KhachHang/ThongTinCaNhan">Thông tin cá nhân</a>
+											<a asp-action="Index" asp-controller="NapTien">
+												<i class="fa fa-money"></i> Nạp tiền
+											</a>
+										</div>
+									</li>
+									<a href="#">
+											<p>Số dư tài khoản: <span id="soDuTaiKhoan">@soDu.ToString("N2")</span> VNĐ</p>
+										</a>
+
+										
+									
+									<li>
+										<form asp-action="Logout" asp-controller="Account" method="post" style="display:inline;">
+											@Html.AntiForgeryToken()
+											<button type="submit" class="btn btn-danger btn-sm">Đăng xuất</button>
+										</form>
+									</li>
+								}
+								else
+								{
+									<li><a href="#"><i class="icon fa fa-user"></i><a asp-action="DangNhap" asp-controller="Account">Đăng nhập</a></li>
+									<li><a href="#"><i class="icon fa fa-user-plus"></i><a asp-action="DangKy" asp-controller="Account">Đăng ký</a></li>
+								}
+						
+							</ul>
+						</div><!-- /.cnt-account -->
+
+					
+						<div class="clearfix"></div>
+					</div><!-- /.header-top-inner -->
+				</div><!-- /.container -->
+			</div><!-- /.header-top -->
+			<!-- ============================================== TOP MENU : END ============================================== -->
+			<div class="main-header">
+				<div class="container">
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-3 logo-holder">
+							<!-- ============================================================= LOGO ============================================================= -->
+							<div class="logo">
+								<a asp-action="Index" asp-controller="Home">
+									
+								</a>
+								<img src="~/images/logo.png" />
+							</div>
+							<!-- /.logo -->
+							<!-- ============================================================= LOGO : END ============================================================= -->
+						</div><!-- /.logo-holder -->
+
+						<div class="col-xs-12 col-sm-12 col-md-7 top-search-holder">
+							<div class="search-area">
+								<form>
+									<div class="control-group">
+										<ul class="categories-filter animate-dropdown">
+										</ul>
+										<div class="search-area" style="width: 100%;">
+											<form>
+												<div class="control-group" style="display: flex; width: 100%;">
+													<input class="search-field" placeholder="Search for games, consoles, accessories..." />
+													<a class="search-button" href="#" style="width: 50px; height: 45px; background-color: #ffcc00; border-radius: 4px; margin-left: 5px; display: flex; justify-content: center; align-items: center;">
+														<i class="fa fa-search" style="color: black;"></i>
+													</a>
+
+												</div>
+											</form>
+										</div>
+
+
+									</div>
+								</form>
+							</div><!-- /.search-area -->
+						</div><!-- /.top-search-holder -->
+
+					</div><!-- /.row -->
+				</div><!-- /.container -->
+			</div><!-- /.main-header -->
+			<!-- ============================================== NAVBAR ============================================== -->
+			<div class="header-nav animate-dropdown">
+				<div class="container">
+					<div class="yamm navbar navbar-default" role="navigation">
+						<div class="navbar-header">
+							<button data-target="#mc-horizontal-menu-collapse" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+						</div>
+						<div class="nav-bg-class">
+							<div class="navbar-collapse collapse" id="mc-horizontal-menu-collapse">
+								<div class="nav-outer">
+									<ul class="nav navbar-nav">
+										<li class="active"><a href="home.html">Home</a></li>
+										<li><a href="category.html">Game tải nhiều</a></li>
+										<li><a href="category.html">Game việt hóa</a></li>
+										<li><a href="category.html">Game+</a></li>
+										<li><a href="category.html">Game Bản Quyèn</a></li>
+										
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
 	 <!--banner-info-->	
-	 <div class="banner-info">
-		  <div class="container">
-			  <div class="logo">
-					 <h1><a asp-action="Index" asp-controller="Home">WEBGAMESTORE</a></h1>
-			  </div>
-			 <div class="top-menu">
-				 <span class="menu"></span>
-					<ul class="nav1">
-						 <li class="active"><a asp-action="Index" asp-controller="Home">HOME</a></li>
-						 <li><a asp-action="Index" asp-controller="SanPham">GAME HOT</a></li>
-						 <li><a href="reviews.html">ĐÁNH GIÁ</a></li>
-						 <li><a href="typo.html">TIN TỨC</a></li>
-						 <li><a href="gallery.html">THƯ VIỆN</a></li>
-						 <li><a href="contact.html">LIÊN HỆ</a></li>
-				  </ul>
-			 </div>	
-	 <!-- script-for-menu -->
-						<script>
-							 $( "span.menu" ).click(function() {
-							$( "ul.nav1" ).slideToggle( 300, function() {
-							// Animation complete.
-								});
-								});
-						</script>
-					<!-- /script-for-menu -->
-			 
-			 <div class="clearfix"></div>
-		 </div>
-	 </div>
-	 <div class="banner">		  			
-		<div class="bnr2">						  
-	   </div>
-</div>
+	 
 
 	@RenderBody()
 
@@ -138,6 +368,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	 <div class="container">
 		 <p> © 2025 Store Game | Liên hệ ngay: 0764483295</p>
 	 </div>
-</div>
+		</div>
+		<script>
+				  document.getElementById("soDuTaiKhoan").textContent = Number(soDuMoi).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+		</script>
 </body>
 </html>
+

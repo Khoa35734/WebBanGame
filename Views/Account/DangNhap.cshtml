@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Đăng Nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link href="~/css/style.css" rel="stylesheet" />
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #login-section {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+            margin: 0 auto; /* Đảm bảo rằng phần tử căn giữa trong màn hình */
+        }
+
+            #login-section h2 {
+                margin-bottom: 20px;
+                color: #333;
+            }
+
+            #login-section input[type="text"],
+            #login-section input[type="password"] {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            #login-section button {
+                width: 100%;
+                padding: 10px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+                #login-section button:hover {
+                    background-color: #45a049;
+                }
+
+            #login-section p {
+                margin-top: 15px;
+                font-size: 14px;
+                color: #666;
+            }
+
+                #login-section p a {
+                    color: #4CAF50;
+                    text-decoration: none;
+                }
+
+                    #login-section p a:hover {
+                        text-decoration: underline;
+                    }
+
+        .alert {
+            padding: 10px;
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<div id="login-section" style="text-align: center;">
+    <h2>Đăng Nhập</h2>
+
+    <!-- Thông báo -->
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <p style="color: red;">@ViewBag.ErrorMessage</p>
+    }
+    @if (!string.IsNullOrEmpty(ViewBag.LogoutMessage))
+    {
+        <div class="alert alert-success">
+            @ViewBag.LogoutMessage
+        </div>
+    }
+
+    <!-- Form đăng nhập -->
+    <form method="post" action="/Account/DangNhap">
+        @Html.AntiForgeryToken()
+
+        <input type="text" name="username" id="username" placeholder="Tên đăng nhập" required />
+        <input type="password" name="password" id="password" placeholder="Mật khẩu" required />
+        <button type="submit">Đăng Nhập</button>
+    </form>
+
+    <!-- Link chuyển qua trang đăng ký -->
+    <p>Chưa có tài khoản? <a href="/Account/DangKy">Đăng ký</a></p>
+</div>

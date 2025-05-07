@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +21,25 @@ namespace WebBanGame.Areas.Admin.Controllers
             _context = context;
         }
 
+		public async Task<IActionResult> Logout()
+		{
+			// Xóa cookie của phiên đăng nhập
+			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+			// Chuyển hướng người dùng về trang đăng nhập
+			return RedirectToAction("Index", "Home",new { area = "" });
+		}
         // GET: Admin/Account
+        [HttpGet]
+        public JsonResult GetBalance()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var kh = _context.KhachHangs.FirstOrDefault(x => x.MaKh.ToString() == userId);
+            if (kh == null)
+                return Json(new { success = false, balance = 0 });
+
+            return Json(new { success = true, balance = kh.SoDuTk });
+        }
         public async Task<IActionResult> Index()
         {
             return View(await _context.AccountAdmins.ToListAsync());

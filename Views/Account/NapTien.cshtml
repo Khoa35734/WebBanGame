@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Nạp tiền tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    // Bạn có thể truyền BankInfo từ Controller xuống View nếu muốn động hơn
+    var bankInfo = new
+    {
+        BankName = "Ngân hàng ABC",
+        AccountNumber = "123456789",
+        AccountName = "CONG TY TNHH ABC"
+    };
+}
+
+<h2 class="mb-4 text-primary">Nạp tiền vào tài khoản</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow p-4">
+            <h4 class="mb-3">Chọn số tiền muốn nạp:</h4>
+            <form id="depositForm">
+                <div class="mb-3 d-flex flex-wrap gap-2">
+                    @foreach (var amount in new[] { 20000, 50000, 100000, 200000, 500000, 1000000 })
+                    {
+                        <label class="btn btn-outline-primary">
+                            <input type="radio" name="amount" value="@amount" autocomplete="off" required />
+                            @String.Format("{0:N0} VNĐ", amount)
+                        </label>
+                    }
+                </div>
+                <button type="submit" class="btn btn-success mt-3 w-100">Tạo yêu cầu nạp tiền</button>
+            </form>
+            <div id="bankInfo" class="alert alert-info mt-4" style="display:none;">
+                <h5>Chuyển khoản tới:</h5>
+                <ul>
+                    <li>Ngân hàng: <b>@bankInfo.BankName</b></li>
+                    <li>Số tài khoản: <b id="bankAccount">@bankInfo.AccountNumber</b> <button type="button" onclick="copyToClipboard('@bankInfo.AccountNumber')" class="btn btn-link btn-sm">Copy</button></li>
+                    <li>Chủ tài khoản: <b>@bankInfo.AccountName</b></li>
+                    <li>**Nội dung chuyển khoản:** <b id="depositNote"></b> <button type="button" onclick="copyToClipboard(document.getElementById('depositNote').textContent)" class="btn btn-link btn-sm">Copy</button></li>
+                </ul>
+                <div class="alert alert-warning mt-2">
+                    Vui lòng chuyển đúng nội dung để hệ thống tự động cộng tiền!
+                </div>
+            </div>
+            <div id="resultMsg" class="alert mt-2" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Gửi form sinh mã giao dịch và hiện thông tin chuyển khoản
+        document.getElementById("depositForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            var amount = document.querySelector('input[name="amount"]:checked').value;
+            fetch("/KhachHang/TaoLenhNapTien", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({ amount: amount })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    document.getElementById("bankInfo").style.display = "block";
+                    document.getElementById("depositNote").textContent = data.note;
+                    document.getElementById("resultMsg").style.display = "none";
+                } else {
+                    document.getElementById("resultMsg").textContent = data.message;
+                    document.getElementById("resultMsg").className = "alert alert-danger mt-2";
+                    document.getElementById("resultMsg").style.display = "block";
+                    document.getElementById("bankInfo").style.display = "none";
+                }
+            });
+        });
+
+        function copyToClipboard(text){
+            navigator.clipboard.writeText(text);
+            alert("Đã copy!");
+        }
+    </script>
+}

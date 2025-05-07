@@ -150,7 +150,77 @@ namespace WebBanGame.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        public class MuaGameRequest { public int GameId { get; set; } }
+        [HttpPost]
 
+      
+        [ValidateAntiForgeryToken]
+     
+        public JsonResult MuaGame([FromBody] MuaGameRequest req)
+        {
+            try
+            {
+                // Lấy thông tin game
+                var game = _context.SanPhams.FirstOrDefault(g => g.MaSp == req.GameId);
+                if (game == null)
+                    return Json(new { success = false, message = "Sản phẩm không tồn tại." });
+
+                // Lấy thông tin người dùng
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var customer = _context.KhachHangs.FirstOrDefault(c => c.MaKh.ToString() == userId);
+                if (customer == null)
+                    return Json(new { success = false, message = "Bạn cần đăng nhập để thực hiện giao dịch." });
+
+                // Kiểm tra số dư tài khoản
+                if (customer.SoDuTk < game.GiaSp)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Số dư TK không đủ để mua game này.Vui lòng nạp thêm tiền!"
+                    });
+                }
+
+                // Trừ số dư tài khoản
+                customer.SoDuTk -= game.GiaSp;
+
+                // Tạo hóa đơn mua game
+                var order = new DonHang
+                {
+                    MaKh = customer.MaKh,
+                    NgayTao = DateTime.Now,
+                    TrangThaiHuyDon = false,
+                    ThanhToan = true,
+                    NgayThanhToan = DateTime.Now,
+                    Note = "Mua game thành công!"
+                };
+                _context.DonHangs.Add(order);
+                _context.SaveChanges();
+
+                // Thêm chi tiết hóa đơn
+                var orderDetail = new ChiTietDonHang
+                {
+                    MaDh = order.MaDh,
+                    MaSp = game.MaSp,
+                    TongTien = game.GiaSp,
+                    Ngaygiao = 0 // nếu giao ngay
+                };
+                _context.ChiTietDonHangs.Add(orderDetail);
+
+                _context.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Bạn đã mua game thành công!",
+                    downloadLink = game.LinkDownGame
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Có lỗi xảy ra: " + ex.Message });
+            }
+        }
         private bool SanPhamExists(int id)
         {
             return _context.SanPhams.Any(e => e.MaSp == id);

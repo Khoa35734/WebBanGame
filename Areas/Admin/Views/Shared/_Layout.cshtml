@@ -86,8 +86,8 @@
                         <!-- ============================================================== -->
                         <li>
                             <a class="profile-pic" href="#">
-                                <img src="~/admin_accessts/plugins/images/users/varun.jpg" alt="user-img" width="36"
-                                    class="img-circle"><span class="text-white font-medium">Nguyễn Thành Đạt</span></a>
+                                <img src="~/admin_accessts/plugins/images/users/mahiru.jpg" alt="user-img" width="36"
+                                    class="img-circle"><span class="text-white font-medium">Chào mừng Admin</span></a>
                         </li>
                         <!-- ============================================================== -->
                         <!-- User profile and search -->
@@ -139,27 +139,26 @@
                                 <span class="hide-menu">Quản Lý Tài Khoản</span>
                             </a>
                         </li>
+
                         <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="#"
-                                aria-expanded="false">
-                                <i class="fas fa-user" aria-hidden="true"></i>
-                                <span class="hide-menu">Tài Khoản Của Tôi</span>
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" asp-action="Index" asp-controller="AdminOrder" asp-area="Admin"
+                               aria-expanded="false">
+                                <i class=" fas fa-address-book" aria-hidden="true"></i>
+                                <span class="hide-menu">Quản Lý Mua Game</span>
                             </a>
                         </li>
+
                         <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="404.html"
-                                aria-expanded="false">
-                                <i class="fas fa-key" aria-hidden="true"></i>
-                                <span class="hide-menu">Đổi Mật Khẩu</span>
-                            </a>
+                            <form asp-action="Logout" asp-controller="Account" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="sidebar-link waves-effect waves-dark sidebar-link btn btn-link text-start"
+                                        style="border: none; background: none; padding: 0; color: inherit; text-decoration: none;">
+                                    <i class="fas fa-arrow-circle-left" aria-hidden="true"></i>
+                                    <span class="hide-menu">Đăng Xuất</span>
+                                </button>
+                            </form>
                         </li>
-                         <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="404.html"
-                                aria-expanded="false">
-                                <i class="fas fa-arrow-circle-left" aria-hidden="true"></i>
-                                <span class="hide-menu">Đăng Xuất</span>
-                            </a>
-                        </li>
+
                     </ul>
 
                 </nav>
