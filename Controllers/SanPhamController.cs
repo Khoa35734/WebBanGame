@@ -67,7 +67,42 @@ namespace WebBanGame.Controllers
             ViewData["MaDm"] = new SelectList(_context.DanhMucSps, "MaDm", "TenDm", sanPham.MaDm);
             return View(sanPham);
         }
+        public IActionResult Search(string q)
+        {
+            // Lọc game theo tên
+            var games = _context.SanPhams
+                          .Where(g => g.TenSp.Contains(q) || string.IsNullOrEmpty(q)) // Nếu q rỗng, trả về tất cả
+                          .ToList();
 
+            // Tạo ViewModel
+            var viewModel = new SearchViewModel
+            {
+                Query = q,
+                Games = games
+            };
+
+            return View("Search", viewModel); // Truyền ViewModel vào View
+        }
+        public ActionResult SearchDm(int danhMucId)
+        {
+            // Lấy danh sách các game thuộc danh mục
+            var danhMuc = _context.DanhMucSps.FirstOrDefault(dm => dm.MaDm == danhMucId);
+           
+
+            var games = _context.SanPhams
+                .Where(sp => sp.MaDm == danhMucId)
+                .ToList();
+
+            // Tạo ViewModel để truyền dữ liệu đến View
+            var viewModel = new SearchDmViewModel
+            {
+                DanhMuc = danhMuc,
+                Games = games
+            };
+
+            return View(viewModel);
+        }
+    
         // GET: SanPham/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

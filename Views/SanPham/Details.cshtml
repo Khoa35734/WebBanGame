@@ -1,5 +1,6 @@
 ﻿@model WebBanGame.Models.SanPham
 
+
 @{
 	ViewData["Title"] = "Details";
 	Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,15 +13,17 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(0,0,0,0.5);
+		background:#eaf6ff;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		z-index: 999;
 	}
-
+	.body {
+        background-color:   #eaf6ff; /* Màu trắng */
+    }
 	.confirm-box {
-		background: white;
+		background:   #eaf6ff;
 		padding: 20px;
 		border-radius: 8px;
 		text-align: center;
@@ -44,7 +47,7 @@
 		margin: auto;
 		padding: 2.5em 0;
 		min-width: 600px;
-		background-color: white;
+		background-color:  #eaf6ff;
 		border-radius: 5px;
 	}
 
@@ -85,7 +88,7 @@
 			font-size: 2.9em;
 		}
 
-	.buy--btn {
+.buy--btn {
 		padding: 1.5em 3.1em;
 		border: none;
 		border-radius: 7px;
@@ -97,7 +100,6 @@
 		box-shadow: 2px 2px 25px -7px #4c4c4c;
 		cursor: pointer;
 	}
-
 		.buy--btn:active {
 			transform: scale(0.97);
 		}
@@ -107,144 +109,177 @@
 		margin-top: 20px;
 		display: none;
 	}
+	.mota-content img {
+		max-width: 100%;
+		height: auto;
+		margin: 10px 0;
+	}
+	.mota-content iframe {
+		max-width: 100%;
+		margin: 10px 0;
+
+	}
+	.gallery {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+		.gallery img {
+        width: 1296px;
+        margin: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
 </style>
 
-
 <div class="container">
-    <section class="product">
-        <div class="product__photo">
-            <div class="photo-container">
-                <div class="photo-main">
-                    <img src="@Model.AnhSp" alt="@Model.TenSp">
-                </div>
-            </div>
-        </div>
-        <div class="product__info">
-            <div class="title">
-                <h1 style="font-weight:bold; font-size:60px;">@Model.TenSp</h1>
-            </div>
-            <div class="price">
-                <span style="font-size:40px; font-weight:bold;">@Model.GiaSp.ToString("#,##0")</span> VNĐ
-            </div>
-            <div class="description">
-                <h3>THỂ LOẠI:</h3>
-                <ul>
-                    <li>@Model.MaDmNavigation.TenDm</li>
-                </ul>
-            </div>
-            <div class="description">
-                <h3>THÔNG TIN:</h3>
-                <ul>
-                    <li>Ngày phát hành: @Model.CreateDate.ToString("dd/MM/yyyy")</li>
-                </ul>
-            </div>
-            <button class="buy--btn" onclick="showConfirmForm()">MUA NGAY</button>
+<section class="product">
+	<div class="product__photo">
+		<div class="game-image">
+			<img src="@Model.AnhSp" alt="Game Image">
+		</div>
+	</div>
+	<div class="product__info">
+		<div class="title">
+			<h1 style="font-weight:bold; font-size:60px;">@Model.TenSp</h1>
+			<span>COD: 45999</span>
+		</div>
+		<div class="price">
+			<span style="font-size:40px; font-weight:bold;">@Model.GiaSp.ToString("#,##0")</span> VNĐ
+		</div>
+		<div class="description">
+			<h3>THỂ LOẠI:</h3>
+			<ul>
+				<li>@Model.MaDmNavigation.TenDm</li>
+			</ul>
+		</div>
+		<div class="description">
+			<h3>THÔNG TIN:</h3>
+			<ul>
+		
+				<li>Ngày phát hành: @Model.CreateDate.ToString("dd/MM/yyyy")</li>
+			</ul>
+		</div>
+		          
+		<button class="buy--btn" onclick="showConfirmForm()">MUA NGAY</button>
+		
+		<!-- Container for error messages -->
+		<div id="errorContainer"></div>
+	 
+		<!-- Form xác nhận mua -->
+		<div id="confirmForm" class="confirm-overlay" style="display:none;">
+			<div class="confirm-box">
+				<p>Bạn có chắc chắn muốn mua game này?</p>
+				<button type="button" id="confirmPurchaseButton" class="btn btn-success" data-game-id="@Model.MaSp">Xác nhận</button>
+				<button type="button" class="btn btn-secondary" onclick="hideConfirmForm()">Hủy</button>
+			</div>
+		</div>
 
-            <!-- Container for error messages -->
-            <div id="errorContainer"></div>
+		<!-- Form hiển thị thông báo thành công -->
+		<div id="successForm" class="confirm-overlay" style="display:none;">
+			<div class="confirm-box">
+				<p id="successMessage">Bạn đã mua game thành công!</p>
+				<a id="downloadLink" href="#" class="btn btn-primary" target="_blank">Tải game</a>
+				<button type="button" class="btn btn-secondary" onclick="hideSuccessForm()">Đóng</button>
+			</div>
+		</div>
+	</div>
+		
+</section>
 
-            <!-- Form xác nhận mua -->
-            <div id="confirmForm" class="confirm-overlay" style="display:none;">
-                <div class="confirm-box">
-                    <p>Bạn có chắc chắn muốn mua game này?</p>
-                    <button type="button" id="confirmPurchaseButton" class="btn btn-success" data-game-id="@Model.MaSp">Xác nhận</button>
-                    <button type="button" class="btn btn-secondary" onclick="hideConfirmForm()">Hủy</button>
-                </div>
-            </div>
-
-            <!-- Form hiển thị thông báo thành công -->
-            <div id="successForm" class="confirm-overlay" style="display:none;">
-                <div class="confirm-box">
-                    <p id="successMessage">Bạn đã mua game thành công!</p>
-                    <a id="downloadLink" href="#" class="btn btn-primary" target="_blank">Tải game</a>
-                    <button type="button" class="btn btn-secondary" onclick="hideSuccessForm()">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
-
+<div class="description">
+			
+			<div class="mota-content">
+				     @Html.Raw(Model.MotaSp)
+			</div>
+		</div>
+ 
 <script>
-    function showConfirmForm() {
-        const confirmForm = document.getElementById("confirmForm");
-        if (confirmForm) {
-            confirmForm.style.display = "flex";
-        } else {
-            console.error("Confirm form not found.");
-        }
-    }
+	function showConfirmForm() {
+		const confirmForm = document.getElementById("confirmForm");
+		if (confirmForm) {
+			confirmForm.style.display = "flex";
+		} else {
+			console.error("Confirm form not found.");
+		}
+	}
 
-    function hideConfirmForm() {
-        const confirmForm = document.getElementById("confirmForm");
-        if (confirmForm) {
-            confirmForm.style.display = "none";
-        } else {
-            console.error("Confirm form not found.");
-        }
-    }
+	function hideConfirmForm() {
+		const confirmForm = document.getElementById("confirmForm");
+		if (confirmForm) {
+			confirmForm.style.display = "none";
+		} else {
+			console.error("Confirm form not found.");
+		}
+	}
 
-    function showSuccessForm(message, downloadLink) {
-        const successForm = document.getElementById("successForm");
-        const successMessage = document.getElementById("successMessage");
-        const link = document.getElementById("downloadLink");
+	function showSuccessForm(message, downloadLink) {
+		const successForm = document.getElementById("successForm");
+		const successMessage = document.getElementById("successMessage");
+		const link = document.getElementById("downloadLink");
 
-        if (successForm && successMessage && link) {
-            successMessage.textContent = message;
-            link.href = downloadLink;
-            successForm.style.display = "flex";
-        } else {
-            console.error("Success form elements not found.");
-        }
-    }
+		if (successForm && successMessage && link) {
+			successMessage.textContent = message;
+			link.href = downloadLink;
+			successForm.style.display = "flex";
+		} else {
+			console.error("Success form elements not found.");
+		}
+	}
 
-    function hideSuccessForm() {
-        const successForm = document.getElementById("successForm");
-        if (successForm) {
-            successForm.style.display = "none";
-        } else {
-            console.error("Success form not found.");
-        }
-    }
+	function hideSuccessForm() {
+		const successForm = document.getElementById("successForm");
+		if (successForm) {
+			successForm.style.display = "none";
+		} else {
+			console.error("Success form not found.");
+		}
+	}
 
-    // Xử lý sự kiện xác nhận mua game
-    document.getElementById("confirmPurchaseButton").addEventListener("click", function () {
-        const gameId = this.getAttribute("data-game-id");
-        const errorContainer = document.getElementById("errorContainer");
+	// Xử lý sự kiện xác nhận mua game
+	document.getElementById("confirmPurchaseButton").addEventListener("click", function () {
+		const gameId = this.getAttribute("data-game-id");
+		const errorContainer = document.getElementById("errorContainer");
 
-        // Kiểm tra xem gameId có hợp lệ không
-        if (!gameId) {
-            errorContainer.innerText = "Lỗi: Không thể xác định game cần mua.";
-            errorContainer.style.display = "block";
-            return;
-        }
+		// Kiểm tra xem gameId có hợp lệ không
+		if (!gameId) {
+			errorContainer.innerText = "Lỗi: Không thể xác định game cần mua.";
+			errorContainer.style.display = "block";
+			return;
+		}
 
-        errorContainer.style.display = "none"; // Ẩn lỗi cũ
+		errorContainer.style.display = "none"; // Ẩn lỗi cũ
 
-        // Gửi yêu cầu tới controller
-        fetch('/SanPham/MuaGame', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-            },
-            body: JSON.stringify({ GameId: gameId })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Hiển thị form thành công
-                    showSuccessForm(data.message, data.downloadLink);
-                } else {
-                    // Hiển thị lỗi từ server
-                    errorContainer.innerText = `Lỗi: ${data.message}`;
-                    errorContainer.style.display = "block";
-                }
-                hideConfirmForm();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorContainer.innerText = "Có lỗi xảy ra khi xử lý giao dịch. Vui lòng thử lại sau.";
-                errorContainer.style.display = "block";
-            });
-    });
+		// Gửi yêu cầu tới controller
+		fetch('/SanPham/MuaGame', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+			},
+			body: JSON.stringify({ GameId: gameId })
+		})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					// Hiển thị form thành công
+					showSuccessForm(data.message, data.downloadLink);
+				} else {
+					// Hiển thị lỗi từ server
+					errorContainer.innerText = `Lỗi: ${data.message}`;
+					errorContainer.style.display = "block";
+				}
+				hideConfirmForm();
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				errorContainer.innerText = "Có lỗi xảy ra khi xử lý giao dịch. Vui lòng thử lại sau.";
+				errorContainer.style.display = "block";
+			});
+	});
 </script>

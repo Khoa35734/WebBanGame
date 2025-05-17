@@ -17,7 +17,7 @@ public partial class KhachHang
 
     public string Email { get; set; } = null!;
 
-    public string? CreateDate { get; set; }
+    public DateOnly CreateDate { get; set; }
 
     public string? TenTaiKhoan { get; set; }
 

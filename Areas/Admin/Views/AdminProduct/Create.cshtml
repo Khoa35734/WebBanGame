@@ -57,11 +57,12 @@
                 <input asp-for="NgaySua" class="form-control" />
                 <span asp-validation-for="NgaySua" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="MotaSp" class="control-label">Mô Tả Game</label>
-                <input asp-for="MotaSp" class="form-control" />
-                <span asp-validation-for="MotaSp" class="text-danger"></span>
-            </div>
+           <div class="form-group">
+    <label asp-for="MotaSp" class="control-label">Mô Tả Game</label>
+    <textarea asp-for="MotaSp" class="form-control" rows="10"></textarea>
+    <span asp-validation-for="MotaSp" class="text-danger"></span>
+</div>
+
             <div class="form-group">
                 <label asp-for="LinkDownGame" class="control-label">Link Tải Game</label>
                 <input asp-for="LinkDownGame" class="form-control" />

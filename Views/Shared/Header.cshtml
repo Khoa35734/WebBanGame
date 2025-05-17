@@ -1,46 +1,345 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    // Kết nối context và lấy thông tin danh mục, số dư từ Claims
+    WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
+ var danhMucList = db.DanhMucSps
+        .Where(x => x.TrangThai == true)
+        .Select(x => new { x.MaDm, x.TenDm }) // Chỉ lấy các cột cần thiết
+        .ToList();
+    var soDuClaim = User.FindFirst("SoDuTk")?.Value;
+    decimal soDu = decimal.TryParse(soDuClaim, out var tempSoDu) ? tempSoDu : 0;
 }
-<!-- Header Top Bar -->
-<div class="header-top bg-light py-2 border-bottom">
-    <link rel="stylesheet" href="~/css/header.css" />
-    <div class="container">
-        <div class="header-top-inner d-flex justify-content-between align-items-center">
-            <!-- DONATE Section -->
-            <div class="donate-box">
-                <a href="#" class="donate-btn">💖 DONATE</a>
-                <span class="donate-note">tải tốc độ cao chỉ 1.000 donate/1game</span>
-            </div>
+<style>
+/* General Styling for User Dropdown */
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+}
 
-            <!-- Account Section -->
-            <div class="cnt-account">
-                <ul class="list-unstyled d-flex align-items-center mb-0">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <li class="me-3"><i class="fa fa-user"></i> Xin chào, @User.Identity.Name</li>
-                        <li class="me-3">
-                            <i class="fa fa-money"></i> Số dư: @User.Claims.FirstOrDefault(c => c.Type == "SoDuTaiKhoan")?.Value
-                        </li>
-                        <li>
-                            <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">
+.user-dropdown span {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.header-style {
+    background: #f3faff; /* Light blue background */
+    border-bottom: 0px solid #eaeaea; /* No border at the bottom */
+    padding-bottom: 6px; /* Padding at the bottom */
+    max-width: 1300px; /* Maximum width */
+    margin: 0 auto; /* Center the header */
+}
+.user-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: #fff;
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+    border-radius: 7px;
+    z-index: 999;
+    margin-top: 5px;
+}
+
+.user-dropdown-content a,
+.user-dropdown-content button {
+    color: #222;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    border: none;
+    background: none;
+    font-size: inherit;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+}
+.page-container {
+    max-width: 1296px;
+   /* Độ rộng tối đa của nội dung */
+    margin: 0 auto;    /* Căn giữa nội dung */
+  /* Thêm khoảng cách bên trái và phải */
+}
+
+.user-dropdown-content a:hover,
+.user-dropdown-content button:hover {
+    background: #f6f6f6;
+}
+
+.user-dropdown-content i {
+    color: #ff5600;
+}
+
+/* Notifications Styling */
+.user-dropdown .fa-bell {
+    font-size: 23px;
+    color: #222;
+    cursor: pointer;
+    position: relative;
+}
+
+.user-dropdown .fa-bell span {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background: #ff5600;
+    color: #fff;
+    font-size: 13px;
+    border-radius: 50%;
+    padding: 2px 7px;
+}
+
+/* Coins and Energy Styling */
+.user-dropdown span i {
+    color: #e5426e;
+    font-size: 14px;
+}
+
+/* Responsive Adjustments */
+
+
+    .user-dropdown-content {
+        min-width: 150px;
+    }
+
+    .user-dropdown-content a,
+    .user-dropdown-content button {
+        padding: 8px 15px;
+    }
+}
+/* Notification Wrapper */
+  .notification-container {
+      position: relative;
+      width: 100%; /* Full width of the container */
+      overflow: hidden; /* Hide overflowing text */
+      background: #eef7fd; /* Optional background color */
+  }
+
+  /* Notification Content */
+  .notification-slider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: absolute;
+      white-space: nowrap;
+      animation: slide-left 10s linear infinite; /* Sliding effect */
+  }
+
+  .notification-slider span {
+      display: inline-block;
+      margin-right: 20px; /* Spacing between items in the notification */
+  }
+
+  .notification-slider i {
+      color: #ff9c00;
+      font-size: 20px;
+  }
+
+  .notification-slider .badge {
+      background: #39e27c;
+      color: #fff;
+      font-weight: bold;
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 18px;
+      margin-right: 8px;
+  }
+
+  .notification-slider a {
+      font-size: 20px;
+      font-weight: 600;
+      color: #4a5874;
+      text-decoration: none;
+  }
+  .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle::after {
+    content: none !important; /* Loại bỏ icon tam giác */
+}
+
+/* Ẩn menu theo mặc định */
+.dropdown-menu {
+    display: none; /* Ẩn menu theo mặc định */
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding: 10px 0;
+    z-index: 1000;
+    min-width: 200px;
+}
+
+/* Hiển thị menu khi hover */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Thiết kế các mục menu */
+.dropdown-menu li {
+    padding: 5px 15px;
+}
+.dropdown-toggle,
+.dropdown-menu li a {
+    text-transform: uppercase;
+    font-family: Arial, sans-serif; /* Đặt font chữ tương tự */
+    font-size: 16px; /* Đặt kích thước chữ như GAME+ */
+    color: #222; /* Màu chữ giống với GAME+ */
+    text-decoration: none; /* Loại bỏ gạch chân */
+}
+.dropdown-menu li a:hover {
+    color: #e5426e; /* Màu chữ khi hover */
+    text-decoration: underline; /* Thêm gạch chân khi hover (nếu muốn) */
+}
+.dropdown-menu li a {
+    text-decoration: none;
+    color: #222;
+    display: block;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #f3f3f3;
+    color: #007bff;
+}
+  /* Sliding Animation */
+  
+</style>
+<header class="header-style">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 0 2px 0;">
+        <span style="font-size: 15px; color: #e5426e;">
+            <i class="fa fa-heart"></i>
+            <b>❤️DONATE</b> tải tốc độ cao chỉ 1.000 donate/1game
+        </span>
+    <form asp-action="Search" asp-controller="SanPham" method="get" style="flex: 1; display: flex; justify-content: center; align-items: center; margin: 0 12px;">
+    <input type="text" name="q" placeholder="Nhập tên game" 
+           style="border-radius: 5px 0 0 5px; border: 1px solid #ccc; height: 38px; width: 320px; padding: 0 12px; font-size: 16px;" 
+           value="@ViewData["SearchQuery"]">
+    <button type="submit" 
+            style="border-radius: 0 5px 5px 0; height: 38px; width: 42px; background: #222; color: #fff; border: none; cursor: pointer;">
+        <i class="fa fa-search"></i>
+    </button>
+</form>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <!-- Bell Icon -->
+                    <div style="position: relative;">
+                        <i class="fa fa-bell" style="font-size: 23px; color: #222; cursor: pointer;"></i>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" style="position: relative; display: inline-block;">
+                        <span style="cursor: pointer; display: flex; flex-direction: column; align-items: flex-start; gap: 3px;">
+                            <span style="font-size: 14px;">Hi, <b>@User.Identity.Name</b>
+                                <i class="fa fa-caret-down" style="margin-left: 2px;"></i></span>
+                            <span style="font-size: 14px; color: #e5426e; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa fa-coins" style="color: #e5426e;"></i>@soDu.ToString("N0")
+                            </span>
+                            
+                        </span>
+                        <div class="user-dropdown-content" style="display: none; position: absolute; right: 0; background: #fff; min-width: 200px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18); border-radius: 7px; z-index: 999; margin-top: 5px;">
+                            <a asp-action="ThongTinCaNhan" asp-controller="Account" style="color: #222; padding: 10px 20px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fa fa-user" style="color: #ff5600;"></i> Hồ sơ cá nhân
+                            </a>
+                            <a asp-action="Donate" asp-controller="Account" style="color: #222; padding: 10px 20px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fa fa-donate" style="color: #ff5600;"></i> Donate
+                            </a>
+                            <a asp-action="GameDaMoKhoa" asp-controller="Account" style="color: #222; padding: 10px 20px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fa fa-gamepad" style="color: #ff5600;"></i> Game đã mở khóa
+                            </a>
+                            <a asp-action="LichSuXemGame" asp-controller="Account" style="color: #222; padding: 10px 20px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fa fa-history" style="color: #ff5600;"></i> Lịch sử xem game
+                            </a>
+                            <a asp-action="LichSuNapVip" asp-controller="Account" style="color: #222; padding: 10px 20px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fa fa-star" style="color: #ff5600;"></i> Lịch sử nạp VIP
+                            </a>
+                            <a asp-action="BaiDaLuu" asp-controller="Account" style="color: #222; padding: 10px 20px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fa fa-bookmark" style="color: #ff5600;"></i> Bài đã lưu
+                            </a>
+                            <form asp-action="Logout" asp-controller="Account" method="post" style="margin: 0;">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-danger btn-sm">Đăng xuất</button>
+                                <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 10px 20px; color: #222; font-size: inherit; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa fa-sign-out-alt" style="color: #ff5600;"></i> Đăng xuất
+                                </button>
                             </form>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="me-3">
-                            <a asp-action="DangNhap" asp-controller="Account" class="btn btn-outline-dark btn-sm">Đăng nhập</a>
-                        </li>
-                        <li>
-                            <a asp-action="DangKy" asp-controller="Account" class="btn btn-dark btn-sm">Đăng ký</a>
-                        </li>
-                    }
-                </ul>
-            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a asp-action="DangNhap" asp-controller="Account" style="color: #e5426e; font-weight: bold; margin-right: 10px;">Đăng nhập</a>
+                <a asp-action="DangKy" asp-controller="Account" style="color: #232b40; font-weight: bold;">Đăng ký</a>
+            }
         </div>
     </div>
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-top: 8px;">
+        <a asp-action="Index" asp-controller="Home">
+            <img src="/images/logo.png" alt="Logo" style="height: 72px; margin-right: 12px;" />
+        </a>
+        <nav style="display: flex; justify-content: center; align-items: center; gap: 32px;
+                    margin-top: 18px; font-size: 20px; font-weight: 700;">
+            <span style="color: #d21e32;">MỚI</span>
+
+           <div class="dropdown">
+    <a href="#" class="dropdown-toggle" style="color: #222; text-decoration: none;">GAME +</a>
+    <ul class="dropdown-menu">
+       @foreach (var danhMucSp in danhMucList)
+    {
+<li><a href="@Url.Action("SearchDm", "SanPham", new { danhMucId = danhMucSp.MaDm })">@danhMucSp.TenDm</a></li>    }
+    </ul>
 </div>
+        </nav>
+    </div>
+
+    <hr style="margin-top: 8px; margin-bottom: 0;">
+    <div style="display: flex; align-items: center; gap: 10px; margin: 14px 0 0 6px;">
+        <span>
+            <i class="fa fa-volume-up" style="color: #ff9c00; font-size: 20px;"></i>
+        </span>
+        <span style="background: #39e27c; color: #fff; font-weight: bold; padding: 2px 10px; border-radius: 4px; font-size: 18px; margin-right: 8px;">NEWS</span>
+        <span style="font-size: 20px; font-weight: 600; color: #4a5874;">
+            <a href="#" style="color: #4a5874; text-decoration: none;">SALE NGHỈ HÈ GIẢM GIÁ 80%</a>
+        </span>
+    </div>
+   
+</header>
+<script>
+    document.querySelector('.user-dropdown > span').addEventListener('click', function () {
+        const dropdownContent = document.querySelector('.user-dropdown-content');
+        dropdownContent.style.display = dropdownContent.style.display === 'none' || dropdownContent.style.display === '' ? 'block' : 'none';
+    });
+
+    // Close dropdown if clicked outside
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('.user-dropdown')) {
+            document.querySelector('.user-dropdown-content').style.display = 'none';
+        }
+    });
+     document.addEventListener('DOMContentLoaded', function () {
+        const dropdown = document.querySelector('.dropdown');
+        const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+        let hideTimeout;
+
+        // Hiển thị dropdown khi hover
+        dropdown.addEventListener('mouseenter', function () {
+            clearTimeout(hideTimeout); // Ngừng hẹn giờ ẩn
+            dropdown.classList.add('show'); // Thêm class "show" để hiển thị menu
+        });
+
+        // Ẩn dropdown sau khi rời chuột 1 giây
+        dropdown.addEventListener('mouseleave', function () {
+            hideTimeout = setTimeout(function () {
+                dropdown.classList.remove('show'); // Xóa class "show" để ẩn menu
+            }, 1000); // Thời gian delay 1 giây (1000ms)
+        });
+    });
+</script>

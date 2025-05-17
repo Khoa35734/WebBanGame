@@ -4,79 +4,296 @@
     // Bạn có thể truyền BankInfo từ Controller xuống View nếu muốn động hơn
     var bankInfo = new
     {
-        BankName = "Ngân hàng ABC",
-        AccountNumber = "123456789",
-        AccountName = "CONG TY TNHH ABC"
+        BankName = "BIDV",
+        AccountNumber = "5321335313",
+        AccountName = "PHAM MINH KHOA"
+    };
+
+    // Dữ liệu mẫu cho bảng nạp tiền (chỉ số tiền, KHÔNG có Quân huy)
+    var napTienTable = new[] {
+        10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000
     };
 }
 
-<h2 class="mb-4 text-primary">Nạp tiền vào tài khoản</h2>
+<style>
+    .deposit-container {
+        margin: 40px auto;
+        max-width: 900px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+        justify-content: center;
+    }
+    .deposit-options-table {
+        background: #fafafa;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        width: 370px;
+        padding: 0 0 6px 0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .deposit-options-table table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 16px;
+    }
+    .deposit-options-table th, .deposit-options-table td {
+        padding: 12px 8px;
+        text-align: left;
+        border: none;
+    }
+    .deposit-options-table th {
+        color: #888;
+        font-weight: bold;
+        font-size: 15px;
+        border-bottom: 1px solid #eee;
+        background: #fafafa;
+    }
+    .deposit-row {
+        border-bottom: 1px solid #f1f1f1;
+        transition: background 0.15s;
+        cursor: pointer;
+    }
+    .deposit-row:last-child {
+        border-bottom: none;
+    }
+    .deposit-radio-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+    }
+    .deposit-radio {
+        accent-color: #e53935;
+        width: 19px;
+        height: 19px;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    .deposit-row.selected, .deposit-row:hover {
+        background: #fff3ee;
+        border: 1px solid #e53935;
+    }
+    .deposit-row.selected .deposit-radio-label {
+        font-weight: 600;
+        color: #e53935;
+    }
+    .deposit-amount {
+        font-weight: 500;
+    }
+    .deposit-currency {
+        font-family: 'Arial', sans-serif;
+        font-size: 15px;
+        margin-left: 2px;
+        color: #e53935;
+    }
+    .deposit-summary {
+        flex: 1 1 350px;
+        min-width: 350px;
+        max-width: 400px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        padding: 28px 28px 18px 28px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .deposit-summary-title {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 18px;
+    }
+    .deposit-summary-table {
+        width: 100%;
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+    .deposit-summary-table th, .deposit-summary-table td {
+        padding: 7px 0;
+        border: none;
+        font-weight: normal;
+    }
+    .deposit-summary-table th {
+        color: #444;
+        width: 140px;
+        text-align: left;
+        font-weight: 500;
+    }
+    .deposit-summary-table td {
+        color: #222;
+    }
+    .deposit-summary-highlight {
+        font-weight: bold;
+        color: #e53935;
+    }
+    .deposit-summary-btn {
+        width: 100%;
+        background: #e53935;
+        color: #fff;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .deposit-summary-btn:hover {
+        background: #c62828;
+    }
+    .deposit-summary-note {
+        margin-top: 18px;
+        font-size: 14px;
+        color: #e53935;
+        background: #fff7f5;
+        border-radius: 5px;
+        padding: 8px 12px;
+        border-left: 3px solid #e53935;
+    }
+</style>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow p-4">
-            <h4 class="mb-3">Chọn số tiền muốn nạp:</h4>
-            <form id="depositForm">
-                <div class="mb-3 d-flex flex-wrap gap-2">
-                    @foreach (var amount in new[] { 20000, 50000, 100000, 200000, 500000, 1000000 })
-                    {
-                        <label class="btn btn-outline-primary">
-                            <input type="radio" name="amount" value="@amount" autocomplete="off" required />
-                            @String.Format("{0:N0} VNĐ", amount)
-                        </label>
-                    }
-                </div>
-                <button type="submit" class="btn btn-success mt-3 w-100">Tạo yêu cầu nạp tiền</button>
-            </form>
-            <div id="bankInfo" class="alert alert-info mt-4" style="display:none;">
-                <h5>Chuyển khoản tới:</h5>
-                <ul>
-                    <li>Ngân hàng: <b>@bankInfo.BankName</b></li>
-                    <li>Số tài khoản: <b id="bankAccount">@bankInfo.AccountNumber</b> <button type="button" onclick="copyToClipboard('@bankInfo.AccountNumber')" class="btn btn-link btn-sm">Copy</button></li>
-                    <li>Chủ tài khoản: <b>@bankInfo.AccountName</b></li>
-                    <li>**Nội dung chuyển khoản:** <b id="depositNote"></b> <button type="button" onclick="copyToClipboard(document.getElementById('depositNote').textContent)" class="btn btn-link btn-sm">Copy</button></li>
-                </ul>
-                <div class="alert alert-warning mt-2">
-                    Vui lòng chuyển đúng nội dung để hệ thống tự động cộng tiền!
-                </div>
-            </div>
-            <div id="resultMsg" class="alert mt-2" style="display:none;"></div>
-        </div>
+<h2 class="mb-4 text-primary" style="text-align:center;">Nạp tiền vào tài khoản</h2>
+
+<div class="deposit-container">
+    <div class="deposit-options-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Số tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < napTienTable.Length; i++)
+                {
+                    var value = napTienTable[i];
+                        <tr class="deposit-row" tabindex="0">
+                            <td>
+                                <label class="deposit-radio-label">
+                                    <input type="radio"
+                                           name="amount"
+                                           value="@value"
+                                           class="deposit-radio"
+                                           autocomplete="off"
+                                @(i == 0 ? "checked" : "") />
+                                    <span class="deposit-amount">@value.ToString("N0") <span class="deposit-currency">₫</span></span>
+                                </label>
+                            </td>
+                        </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="deposit-summary">
+        <div class="deposit-summary-title">• Chi tiết giao dịch</div>
+        <table class="deposit-summary-table">
+            <tr>
+                <th>Số tiền</th>
+                <td><span id="summary-amount">@napTienTable[0].ToString("N0") <span class="deposit-currency">₫</span></span></td>
+            </tr>
+            <tr>
+                <th>Phương thức thanh toán</th>
+                <td>Chuyển khoản</td>
+            </tr>
+            <tr>
+                <th>Tên tài khoản</th>
+                <td>@User.Identity?.Name</td>
+            </tr>
+        </table>
+        <button type="button" class="deposit-summary-btn" id="depositBtn">Tạo yêu cầu nạp tiền</button>
+
+        <div id="bankInfo" class="deposit-summary-note" style="display:none;">
+    <div style="text-align:center;">
+        <b>Quét mã QR bằng app ngân hàng để chuyển khoản:</b>
+        <br>
+        <img id="qrImage" src="" alt="Mã QR chuyển khoản" style="max-width: 220px; margin: 16px auto 8px auto; display: block; border:1px solid #eee; border-radius:8px;" />
+        <div style="font-size:12px; color:#666;">Nội dung chuyển khoản: <span id="depositNote"></span></div>
+    </div>
+    <div class="alert alert-warning mt-2 mb-1" style="background:none;border:0;padding-left:0;color:#e53935;">
+        Vui lòng chuyển đúng nội dung để hệ thống tự động cộng tiền!
+    </div>
+</div>
+        <div id="resultMsg" class="alert mt-2" style="display:none;"></div>
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        // Gửi form sinh mã giao dịch và hiện thông tin chuyển khoản
-        document.getElementById("depositForm").addEventListener("submit", function(e){
-            e.preventDefault();
-            var amount = document.querySelector('input[name="amount"]:checked').value;
-            fetch("/KhachHang/TaoLenhNapTien", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-                },
-                body: JSON.stringify({ amount: amount })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success){
-                    document.getElementById("bankInfo").style.display = "block";
-                    document.getElementById("depositNote").textContent = data.note;
-                    document.getElementById("resultMsg").style.display = "none";
-                } else {
-                    document.getElementById("resultMsg").textContent = data.message;
+        <script>
+            // Các giá trị số tiền
+            const tableRows = document.querySelectorAll('.deposit-row');
+            const radios = document.querySelectorAll('.deposit-radio');
+            const priceArr = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(napTienTable));
+
+            function updateSummary(idx) {
+                document.getElementById('summary-amount').innerHTML = priceArr[idx].toLocaleString("vi-VN") + ' <span class="deposit-currency">₫</span>';
+            }
+
+            let selectedIdx = 0;
+            tableRows.forEach((row, i) => {
+                row.addEventListener('click', () => {
+                    radios[i].checked = true;
+                    highlightRow(i);
+                    updateSummary(i);
+                });
+                row.addEventListener('keydown', (e) => {
+                    if(e.key === "Enter" || e.key === " "){
+                        radios[i].checked = true;
+                        highlightRow(i);
+                        updateSummary(i);
+                    }
+                });
+            });
+            radios.forEach((radio, i) => {
+                radio.addEventListener('change', () => {
+                    highlightRow(i);
+                    updateSummary(i);
+                });
+            });
+            function highlightRow(idx){
+                tableRows.forEach((row, j) => row.classList.toggle('selected', j === idx));
+                selectedIdx = idx;
+            }
+            // Mặc định chọn dòng đầu
+            highlightRow(0);
+
+            // Tạo yêu cầu nạp tiền (AJAX)
+            document.getElementById("depositBtn").addEventListener("click", function(){
+                var amount = priceArr[selectedIdx];
+                fetch("/Account/TaoLenhNapTien", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    // Gửi đúng key "Amount" để binding vào NapTienRequest.Amount trên Controller
+                    body: JSON.stringify({ Amount: amount })
+                })
+                .then(res => res.json())
+                    .then(data => {
+        if (data.success) {
+            document.getElementById("bankInfo").style.display = "block";
+            document.getElementById("depositNote").textContent = data.note;
+            document.getElementById("qrImage").src = data.qrUrl;
+            document.getElementById("resultMsg").style.display = "none";
+        } else {
+            document.getElementById("resultMsg").textContent = data.message;
+            document.getElementById("resultMsg").className = "alert alert-danger mt-2";
+            document.getElementById("resultMsg").style.display = "block";
+            document.getElementById("bankInfo").style.display = "none";
+        }
+    }).catch(function() {
+                    document.getElementById("resultMsg").textContent = "Có lỗi xảy ra, vui lòng thử lại!";
                     document.getElementById("resultMsg").className = "alert alert-danger mt-2";
                     document.getElementById("resultMsg").style.display = "block";
                     document.getElementById("bankInfo").style.display = "none";
-                }
+                });
             });
-        });
 
-        function copyToClipboard(text){
-            navigator.clipboard.writeText(text);
-            alert("Đã copy!");
-        }
-    </script>
+            function copyToClipboard(text){
+                navigator.clipboard.writeText(text);
+                alert("Đã copy!");
+            }
+        </script>
 }

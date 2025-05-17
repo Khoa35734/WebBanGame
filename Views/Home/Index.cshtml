@@ -1,151 +1,481 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
+    WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
+    var gameHot = db.SanPhams.Where(x => x.BestSeller == true);
+    var danhSachGame = db.SanPhams.Take(4).ToList(); // Lấy 4 game đầu tiên
+      
 }
 
+
 <!-- banner -->
-	 <!-- Slider-starts-Here -->
-	 <script src="~/js/responsiveslides.min.js"></script>
-	 <script>
-		$(function () {
-		  $("#slider").responsiveSlides({
-			auto:true,
-			nav: false,
-			speed: 500,
-			namespace: "callbacks",
-			pager:true,
-		  });
-		});
-		
-	   </script>
-	 <div class="slider">
-		  <div class="callbacks_container">
-			  <ul class="rslides" id="slider">
-				
-					<div class="slid banner1">
-						  <div class="caption">
-								<h3>GAME STORE - UY TÍN - NHANH GỌN</h3>
-								<p>CHÀO MỪNG BẠN ĐẾN VỚI WEBSITE BÁN GAME CỦA CHÚNG TÔI</p>
-						  </div>
-					</div>
-				
-				
-					 <div class="slid banner2">	
-						  <div class="caption">
-								<h3>God of war - kratos - sony santa monica</h3>
-								<p>CHUẨN BỊ HÒA MÌNH VÀO THẾ GIỚI MỞ HUYỀN BÍ - BẠN ĐÃ SẴN SÀNG CHƯA NÀO</p>
-						  </div>
-					 </div>
-				
-				
-					<div class="slid banner3">	
-						<div class="caption">
-							<h3>Battlefield 4 - game - explosion - digital illusions</h3>
-							<p>TRÒ CHƠI NÀY CÓ THỂ CHỨA NỘI DUNG KHÔNG PHÙ HỢP CHO MỌI LỨA TUỔI, HOẶC CÓ THỂ KHÔNG ĐƯỢC CHỈ ĐỊNH ĐỂ XEM TẠI CÔNG VIỆC.</p>
-						</div>
-					</div>
-				
-			  </ul>
-		 </div>
-	 </div>
+
+<!-- Image Slider HTML/CSS/JS - "Daominhha.net" style -->
+<div class="custom-slider-container">
+     <div class="custom-slider-slide">
+        <img src="~/images/miside.jpg" alt="Game 4" />
+    </div>
+    <div class="custom-slider-slide active">
+        <img src="~/images/banner1.jpg" alt="Mandragora" />
+    </div>
+    <div class="custom-slider-slide">
+        <img src="~/images/GOT.jpg" alt="Game 2" />
+    </div>
+    <div class="custom-slider-slide">
+        <img src="~/images/re4.jpg" alt="Game 3" />
+    </div>
+   
+    <!-- Add more slides as needed -->
+    <button class="custom-slider-arrow left" onclick="sliderPrev()">
+        <span>&lt;</span>
+    </button>
+    <button class="custom-slider-arrow right" onclick="sliderNext()">
+        <span>&gt;</span>
+    </button>
+    <div class="custom-slider-dots"></div>
+</div>
+
+<style>
+    a {
+    text-decoration: none; /* Loại bỏ gạch chân mặc định */
+}
+
+a:hover {
+    text-decoration: none; /* Thêm gạch chân khi hover nếu cần */
+}
+ .custom-slider-container {
+        position: relative;
+        width: 100%; /* Full width of the container */
+        max-width: 1200px; /* Optional: limit the maximum width */
+        margin: 0 auto; /* Center the slider */
+        overflow: hidden; /* Hide overflowing images */
+        border-radius: 20px; /* Bo tròn khung slider */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow */
+    }
+
+ .custom-slider-slide {
+        display: none; /* Hide all slides initially */
+        width: 100%;
+    }
+
+ .custom-slider-slide.active {
+        display: block; /* Show the active slide */
+    }
+
+    .custom-slider-slide img {
+        width: 100%; /* Make image take full width of the slider */
+        height: auto; /* Preserve aspect ratio */
+        border-radius: 20px; /* Bo tròn góc ảnh */
+    }
+
+
+    .custom-slider-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        color: white;
+        border: none;
+        border-radius: 50%; /* Round arrow buttons */
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    .custom-slider-arrow.left {
+        left: 10px;
+    }
+
+    .custom-slider-arrow.right {
+        right: 10px;
+    }
+
+
+.custom-slider-arrow:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+.custom-slider-dots {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+    }
+
+  .custom-slider-dots span {
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .custom-slider-dots span.active {
+        background: white;
+    }
+     body {
+      background: #eef7fd;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #ff6241;
+      margin: 32px 0 10px 24px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title span {
+      color: #232b40;
+      font-size: 1.6rem;
+      font-weight: bold;
+    }
+    .section-title-bar {
+        border: none;
+    border-top: 4px solid #ff6241;
+    margin: 0 24px 18px 24px;
+    width: 100%; /* Đặt độ dài mặc định là 100% */
+    max-width: 1100px; /* Đặt độ dài tối đa */
+    }
+    .game-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 24px;
+    }
+    .game-list-header a {
+      color: #1a94ff;
+      font-weight: bold;
+    
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    .game-thumb {
+        width: 130px; /* Adjust width as needed */
+        height: auto; /* Maintain aspect ratio */
+       border-radius: 12px 12px 12px 12px; /* Cắt tròn góc dưới */
+    transition: transform 0.3s ease, border-radius 0.3s ease;  /* Optional: Add rounded corners */
+        object-fit: cover;
+        /* Optional: Ensure the image fits nicely */
+    }
+    .game-card:hover .game-thumb {
+    transform: scale(1.05); /* Phóng to ảnh khi rê chuột */
+    border-radius: 12px 12px 20px 20px; /* Cắt tròn góc dưới hơn khi hover */
+}
+    .game-list-header a:hover {
+      color: #ff6241;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      padding: 0 24px 24px 24px;
+      text-decoration: none;
+    }
+    .game-card {
+background: #fff; /* Màu nền trắng */
+    border-radius: 12px; /* Bo góc mềm mại */
+    box-shadow: 0 4px 12px rgba(36, 37, 38, 0.1); /* Đổ bóng mềm mại, tăng độ nổi bật */
+    padding: 15px; /* Khoảng cách bên trong khung */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Hiệu ứng khi hover */
+    display: flex;
+    flex-direction: column;
+    min-height: 320px; /* Chiều cao tối thiểu */
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #e6e6e6; /* Đường viền nhạt */
+}
+    }
+    .game-card:hover {
+      box-shadow: 0 6px 18px 0 rgba(36,37,38,.13);
+    }
+    .game-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 12px 12px 0 0;
+    }
+    .game-tags {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      margin-left: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .tag-build, .tag-ver, .tag-new {
+      font-size: 0.89rem;
+      font-weight: bold;
+      background: #45e081;
+      color: #fff;
+      border-radius: 6px;
+      padding: 2px 10px;
+      display: inline-block;
+    }
+    .tag-build { background: #63e6c6; }
+    .tag-ver { background: #8ee6ff; color: #232b40; }
+    .tag-new { background: #45e081; }
+    .tag-update {
+      font-size: 0.87rem;
+      color: #2666b2;
+      background: #e3f2ff;
+      border-radius: 5px;
+      padding: 2px 8px;
+      margin-left: 8px;
+      font-weight: 600;
+    }
+    .game-title {
+      font-size: 1.13rem;
+      font-weight: bold;
+      color: #204080;
+      margin: 10px 0 5px 12px;
+      text-decoration: none;
+      display: block;
+      min-height: 33px;
+    }
+    .game-meta {
+      font-size: 0.98rem;
+      color: #406080;
+      margin: 0 0 8px 12px;
+      min-height: 40px;
+    }
+    .game-meta i {
+      color: #ff9f31;
+      margin-right: 4px;
+    }
+    .game-actions {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 0 12px;
+      text-decoration: none;
+    }
+    .btn-download {
+      background: #232b40;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 22px;
+      font-size: 1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(36,37,38,0.07);
+      transition: background 0.18s;
+        text-decoration: none;
+    }
+    .btn-download:hover {
+      background: #ff6241; 
+
+    }
+    .score-badge {
+      background: #232b40;
+      color: #ffcc2a;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 18px 8px 13px;
+      font-size: 1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 0;
+      text-decoration: none;
+    }
+    .score-badge i {
+      color: #ffcc2a;
+      font-size: 1rem;
+    }
+   
+    }
+</style>
+
+<script>
+    // Custom Slider - No jQuery needed
+    document.addEventListener('DOMContentLoaded', function () {
+        const sliderSlides = document.querySelectorAll('.custom-slider-slide');
+        const sliderDotsContainer = document.querySelector('.custom-slider-dots');
+        let sliderIndex = 0;
+        let sliderTimer = null;
+
+        // Dots setup
+        sliderSlides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'custom-slider-dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => sliderGoTo(i);
+            sliderDotsContainer.appendChild(dot);
+        });
+        const sliderDots = document.querySelectorAll('.custom-slider-dot');
+
+        function sliderShow(idx) {
+            sliderIndex = (idx + sliderSlides.length) % sliderSlides.length;
+            sliderSlides.forEach((s, i) => s.classList.toggle('active', i === sliderIndex));
+            sliderDots.forEach((d, i) => d.classList.toggle('active', i === sliderIndex));
+        }
+        window.sliderPrev = function() { sliderShow(sliderIndex - 1); sliderResetTimer(); }
+        window.sliderNext = function() { sliderShow(sliderIndex + 1); sliderResetTimer(); }
+        window.sliderGoTo = function(idx) { sliderShow(idx); sliderResetTimer(); }
+        function sliderStartTimer() {
+            sliderTimer = setInterval(() => sliderShow(sliderIndex + 1), 5000);
+        }
+        function sliderResetTimer() {
+            clearInterval(sliderTimer);
+            sliderStartTimer();
+        }
+        sliderStartTimer();
+    });
+</script>
 
 <!-- content -->
 <div class="content">
-	 <div class="container">
-		 <div class="top-games">
-			 <h3>Top Games Hot</h3>
-			 <span></span>
-		 </div>
-		 <div class="top-game-grids">
-			 <ul id="flexiselDemo1">
-				@{
-					WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
-					var gameHot = db.SanPhams.Where(x => x.BestSeller == true);
-				}
-				@foreach (var item in gameHot)
-			   {
-				   <li>
-					   <a asp-action="Details" asp-controller="SanPham" asp-route-id="@item.MaSp">
-					 <div class="game-grid">
-						 <h4>@item.TenSp</h4>
-						 <p>@item.GiaSp.ToString("#,##0") VNĐ</p>
-						 <img src="@item.AnhSp" class="img-responsive" alt=""/>
-					 </div>	
-					 </a>
-				 </li>
-			   }
-				 
-			 </ul>
-			<!-- game list section -->
-			<div class="content">
-				<div class="container">
-					<div class="top-games">
-						<h3>Game</h3>
-						<span></span>
-					</div>
-					<div class="top-game-grids">
-						<div class="row">
-							@{
-								var danhSachGame = db.SanPhams.Take(4).ToList(); // Lấy 4 game đầu tiên
-							}
-							@foreach (var game in danhSachGame)
-							{
-								<div class="col-md-3 col-sm-6 mb-4">
-									<div class="game-grid">
-										<a asp-action="Details" asp-controller="SanPham" asp-route-id="@game.MaSp">
-											<img src="@game.AnhSp" class="img-responsive" alt="@game.TenSp" />
-											<h4 class="mt-2">@game.TenSp</h4>
-											<p>@game.GiaSp.ToString("#,##0") VNĐ</p>
-										</a>
-									</div>
-								</div>
-							}
-						</div>
-						<div class="text-center mt-4">
-							<a class="btn btn-primary" asp-controller="SanPham" asp-action="Index">Xem tất cả</a>
-						</div>
-					</div>
-				</div>
-			</div>
-			 
-			 <script type="text/javascript">
-			 $(window).load(function() {			
-			  $("#flexiselDemo1").flexisel({
-				visibleItems: 4,
-				animationSpeed: 1000,
-				autoPlay: true,
-				autoPlaySpeed: 3000,    		
-				pauseOnHover:true,
-				enableResponsiveBreakpoints: true,
-				responsiveBreakpoints: { 
-					portrait: { 
-						changePoint:480,
-						visibleItems: 1
-					}, 
-					landscape: { 
-						changePoint:640,
-						visibleItems: 2
-					},
-					tablet: { 
-						changePoint:768,
-						visibleItems: 3
-					}
-				}
-			});
-			});
-			</script>
-			<script type="text/javascript" src="~/js/jquery.flexisel.js"></script>	
-		 </div>
-	 </div>
+    <div style="background: #eef7fd;">
+        <div class="section-title"> <span>GAMES</span> MỚI </div>
+         <div class="game-list-header">
+            <div></div>
+            <a href="#">Xem tất cả &gt;</a>
+        </div>
+        <hr class="section-title-bar" />
+       
+        
+        <div class="games-grid">
+            @{
+                // Giả sử biến Model là List<WebBanGame.Models.SanPham>
+                // Đặt ở đầu file Razor: @model IEnumerable<WebBanGame.Models.SanPham>
+                // Nếu dùng Razor page, thay đổi cho phù hợp
+           
+            }
+          @foreach (var game in danhSachGame)
+{
+     game.MaDmNavigation = db.DanhMucSps.FirstOrDefault(dm => dm.MaDm == game.MaDm);
+    var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
+    var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME MỚI";
+    var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
+    <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="game-card-link">
+        <div class="game-card">
+            <img class="game-thumb" src="@game.AnhSp" alt="@game.TenSp" />
+            <div class="game-tags">
+                <span class="@tag">@tagText</span>
+                <span class="tag-update">Update: @updateDate</span>
+            </div>
+            <div class="game-title">@game.TenSp</div>
+           <div class="game-meta">
+            <i class="fa fa-gamepad"></i>
+           @if (game.MaDmNavigation != null)
+            {
+                <span>@game.MaDmNavigation.TenDm</span>
+            }
+            else
+            {
+                <span>Không có danh mục</span>
+            }
+           
+        </div>
+            <div class="game-actions">
+                <div class="btn-download"><i class="fa fa-download"></i> @game.GiaSp.ToString("#,##0") VNĐ</div>
+                <div class="score-badge"><i class="fa fa-star"></i> Xem Chi tiết</div>
+            </div>
+        </div>
+    </a>
+}
+        </div>
+    </div>
+            <!-- game list section -->
+    <div style="background: #eef7fd;">
+        <div style="background: #eef7fd;">
+        <div class="section-title"> <span>GAMES</span> MỚI </div>
+         <div class="game-list-header">
+            <div></div>
+            <a href="#">Xem tất cả &gt;</a>
+        </div>
+        <hr class="section-title-bar" />
+        <div class="games-grid">
+            
+            @foreach (var game in danhSachGame)
+            {
+                    game.MaDmNavigation = db.DanhMucSps.FirstOrDefault(dm => dm.MaDm == game.MaDm);
+
+                 var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
+    var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME MỚI";
+    var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
+    <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="game-card-link">
+        <div class="game-card">
+            <img class="game-thumb" src="@game.AnhSp" alt="@game.TenSp" />
+            <div class="game-tags">
+                <span class="@tag">@tagText</span>
+                <span class="tag-update">Update: @updateDate</span>
+            </div>
+            <div class="game-title">@game.TenSp</div>
+           <div class="game-meta">
+            <i class="fa fa-gamepad"></i>
+           @if (game.MaDmNavigation != null)
+            {
+                <span>@game.MaDmNavigation.TenDm</span>
+            }
+            else
+            {
+                <span>Không có danh mục</span>
+            }
+           
+        </div>
+            <div class="game-actions">
+                <div class="btn-download"><i class="fa fa-download"></i> @game.GiaSp.ToString("#,##0") VNĐ</div>
+                <div class="score-badge"><i class="fa fa-star"></i> Xem Chi tiết</div>
+            </div>
+        </div>
+    </a>
+            }
+        </div>
+    </div>
+            <script src="~/js/jquery.flexisel.js"></script>
+            <script type="text/javascript">
+                $(window).load(function () {
+                    $("#flexiselDemo1").flexisel({
+                        visibleItems: 4,
+                        animationSpeed: 1000,
+                        autoPlay: true,
+                        autoPlaySpeed: 3000,
+                        pauseOnHover: true,
+                        enableResponsiveBreakpoints: true,
+                        responsiveBreakpoints: {
+                            portrait: {
+                                changePoint: 480,
+                                visibleItems: 1
+                            },
+                            landscape: {
+                                changePoint: 640,
+                                visibleItems: 2
+                            },
+                            tablet: {
+                                changePoint: 768,
+                                visibleItems: 3
+                            }
+                        }
+                    });
+                });
+            </script>
+        </div>
+    </div>
 </div>
 
 <!-- poster -->
 <div class="poster">
-	 <div class="container">
-		 <div class="poster-info">
-			 <h3>Đắm chìm trong thế giới game li kì đầy màu sắc.</h3>
-			 <p>Web Game Bản Quyền Uy Tín Số 1 Việt Nam</p>
-			  <a class="hvr-bounce-to-bottom" href="reviews.html">Xem Thêm</a>
-		 </div>
-	 </div>
+    <div class="container">
+        <div class="poster-info">
+            <h3>Đắm chìm trong thế giới game li kì đầy màu sắc.</h3>
+            <p>Web Game Bản Quyền Uy Tín Số 1 Việt Nam</p>
+            <a class="hvr-bounce-to-bottom" href="reviews.html">Xem Thêm</a>
+        </div>
+    </div>
 </div>

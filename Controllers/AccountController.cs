@@ -51,9 +51,10 @@ namespace WebBanGame.Controllers
                 ModelState.AddModelError("TenTaiKhoan", "Tài khoản đã tồn tại");
                 return View(model);
             }
+			
 
-            // Tạo tài khoản mới
-            var newAccount = new KhachHang
+			// Tạo tài khoản mới
+			var newAccount = new KhachHang
             {
                 TenTaiKhoan = model.TenTaiKhoan,
                 TenKh = model.TenBan,
@@ -63,8 +64,8 @@ namespace WebBanGame.Controllers
                 Email = model.Email,
                 MatKhau = model.MatKhau, // => nên mã hóa ở đây nếu có yêu cầu bảo mật
                 SoDuTk = 0,
-                CreateDate = DateOnly.FromDateTime(DateTime.Now)
-            };
+                CreateDate =  DateOnly.FromDateTime(DateTime.Now)
+			};
 
             _context.KhachHangs.Add(newAccount);
             _context.SaveChanges();
@@ -129,6 +130,66 @@ namespace WebBanGame.Controllers
 
             // Chuyển hướng người dùng về trang đăng nhập
             return RedirectToAction("Index", "Home");
+        }
+		public IActionResult NapTien() => View();
+        // AJAX - Nhận số tiền từ client, trả về URL QR code (JSON)
+        [HttpPost]
+        public IActionResult TaoLenhNapTien([FromBody] NapTienRequest req)
+        {
+            if (req == null || req.Amount <= 0)
+            {
+                return Json(new { success = false, message = "Số tiền không hợp lệ" });
+            }
+
+            var qrUrl = GenerateStaticVietQR(req.Amount);
+
+            // Có thể sinh note chuyển khoản theo user
+            var note = $"Nap tien {User.Identity?.Name ?? "user"} {req.Amount:N0}";
+
+            return Json(new { success = true, qrUrl, amount = req.Amount, note });
+        }
+
+        // Trang hiển thị QR code (nếu dùng View thay vì modal)
+        public IActionResult QRPayment(decimal amount)
+        {
+            var qrUrl = GenerateStaticVietQR(amount);
+
+            var model = new QRViewModel
+            {
+                Amount = amount,
+                QRUrl = qrUrl
+            };
+
+            return View(model);
+        }
+
+        // Người dùng xác nhận đã thanh toán (có thể gọi qua AJAX hoặc form)
+        [HttpPost]
+        public IActionResult XacNhanDaThanhToan(decimal amount)
+        {
+            // TODO: Có thể lưu lại giao dịch chờ xác nhận ở đây
+            TempData["SuccessMessage"] = $"Đã ghi nhận yêu cầu thanh toán {amount:N0}đ. Vui lòng đợi xác nhận.";
+            return RedirectToAction("Index");
+        }
+
+        // Sinh link QR code VietQR (static)
+        private string GenerateStaticVietQR(decimal amount)
+        {
+            // Thông tin tài khoản nhận tiền
+            string bankCode = "BIDV";
+            string accountNumber = "5321335313";
+            string accountName = "PHAM MINH KHOA";
+
+            // Lưu ý: accountName cần không dấu, viết hoa
+            string note = $"Nap tien {User.Identity?.Name ?? "user"} {amount:N0}";
+
+            // Dùng dịch vụ VietQR để tạo link (hoặc API khác nếu muốn)
+            // Tham khảo: https://img.vietqr.io/image/{bankCode}-{accountNumber}-qr_only.png?amount={amount}&addInfo={note}&accountName={accountName}
+            // Lưu ý: accountName và note cần URL encode
+
+            string qrUrl = $"https://img.vietqr.io/image/{bankCode}-{accountNumber}-qr_only.png?amount={amount}&addInfo={Uri.EscapeDataString(note)}&accountName={Uri.EscapeDataString(accountName)}";
+
+            return qrUrl;
         }
     }
 }
