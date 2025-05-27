@@ -50,7 +50,7 @@ namespace WEB_GAME_STORE.Controllers
             var donHang = new DonHang
             {
                 MaKh = maKhachHang,
-                NgayTao = DateTime.Now,
+                NgayTao = DateOnly.FromDateTime(DateTime.Now),
                 TrangThaiHuyDon = false,
                 ThanhToan = false,
                 NgayThanhToan = default, // có thể cập nhật sau khi thanh toán
@@ -109,11 +109,11 @@ namespace WEB_GAME_STORE.Controllers
 			var newOrder = new DonHang
 			{
 				MaKh = customer.MaKh,
-				NgayTao = DateTime.Now.Date,
-				TrangThaiHuyDon = false,
+				NgayTao = DateOnly.FromDateTime(DateTime.Now),
+                TrangThaiHuyDon = false,
 				ThanhToan = true,
-				NgayThanhToan = DateTime.Now.Date
-			};
+				NgayThanhToan = DateOnly.FromDateTime(DateTime.Now),
+            };
 			_context.DonHangs.Add(newOrder);
 			_context.SaveChanges();
 
@@ -139,7 +139,26 @@ namespace WEB_GAME_STORE.Controllers
 			var downloadLinks = selectedGames.Select(g => g.LinkDownGame).ToList();
 			return Json(new { success = true, message = "Mua hàng thành công!", downloadLinks });
 		}
+        public async Task<IActionResult> LichSuMuaGame()
+        {
+            int maKh = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value); // Lấy mã khách hàng đang login
+            var games = await _context.DonHangs
+                .Where(dh => dh.MaKh == maKh && dh.ThanhToan)
+                .Include(dh => dh.ChiTietDonHangs)
+                    .ThenInclude(ct => ct.MaSpNavigation)
+                .SelectMany(dh => dh.ChiTietDonHangs.Select(ct => new GameMuaViewModel
+                {
+                    MaGame = ct.MaSp,
+                    TenGame = ct.MaSpNavigation.TenSp,
+                    NgayMua = dh.NgayThanhToan,
+                    GiaTien = ct.TongTien,
+                    LinkTaiVe = ct.MaSpNavigation.LinkDownGame ?? "#"
+                }))
+                .ToListAsync();
 
-	}
+            return View(games);
+        }
+
+    }
 }
 

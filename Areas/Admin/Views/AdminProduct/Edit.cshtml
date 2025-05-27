@@ -6,35 +6,37 @@
 }
 
 <h1>Sửa Thông Tin Game</h1>
-
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    <div class="col-md-6">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="MaSp" />
-           <div class="form-group">
+
+            <div class="form-group">
                 <label asp-for="MaDm" class="control-label">Chọn thể loại game</label>
-                <select asp-for="MaDm" class ="form-control" asp-items="ViewBag.MaDm"></select>
+                <select asp-for="MaDm" class="form-control" asp-items="ViewBag.MaDm"></select>
             </div>
             <div class="form-group">
                 <label asp-for="TenSp" class="control-label">Tên Game</label>
                 <input asp-for="TenSp" class="form-control" />
                 <span asp-validation-for="TenSp" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="AnhSp" class="control-label">Link Ảnh Game</label>
-                <input asp-for="AnhSp" class="form-control" />
-                <span asp-validation-for="AnhSp" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VideoSp" class="control-label">Link Video Game</label>
-                <input asp-for="VideoSp" class="form-control" />
-                <span asp-validation-for="VideoSp" class="text-danger"></span>
-            </div>
+           <div class="form-group">
+    <label class="control-label">Upload Ảnh Mới ((Nhớ upload ảnh kể cả không muốn chỉnh sửa ảnh))</label>
+   
+    <!-- Hidden giữ path ảnh cũ -->
+  <input type="file" name="AnhUpload" id="AnhUpload" class="form-control" accept="image/*" />
+<input type="hidden" asp-for="AnhSp" id="AnhSp" />
+@if (!string.IsNullOrEmpty(Model.AnhSp))
+{
+    <img src="@Model.AnhSp" alt="Ảnh hiện tại" style="max-width:120px;" />
+    <div style="font-size:small;color:gray;">Ảnh hiện tại: @Model.AnhSp</div>
+}
+</div>
             <div class="form-group">
                 <label asp-for="GiaSp" class="control-label">Giá</label>
-                <input asp-for="GiaSp" class="form-control" />
+                <input asp-for="GiaSp" class="form-control" type="number" min="0" step="1" />
                 <span asp-validation-for="GiaSp" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
@@ -49,20 +51,19 @@
             </div>
             <div class="form-group">
                 <label asp-for="CreateDate" class="control-label">Ngày Tạo</label>
-                <input asp-for="CreateDate" class="form-control" />
+                <input asp-for="CreateDate" class="form-control" type="date" />
                 <span asp-validation-for="CreateDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="NgaySua" class="control-label">Ngày Sửa</label>
-                <input asp-for="NgaySua" class="form-control" />
+                <input asp-for="NgaySua" class="form-control" readonly />
                 <span asp-validation-for="NgaySua" class="text-danger"></span>
             </div>
             <div class="form-group">
-    <label asp-for="MotaSp" class="control-label">Mô Tả Game</label>
-    <textarea asp-for="MotaSp" class="form-control" rows="10"></textarea>
-    <span asp-validation-for="MotaSp" class="text-danger"></span>
-</div>
-
+                <label asp-for="MotaSp" class="control-label">Mô Tả Game</label>
+                <textarea asp-for="MotaSp" class="form-control" rows="10"></textarea>
+                <span asp-validation-for="MotaSp" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="LinkDownGame" class="control-label">Link Tải Game</label>
                 <input asp-for="LinkDownGame" class="form-control" />
@@ -74,8 +75,25 @@
         </form>
     </div>
 </div>
-
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var fileInput = document.getElementById('AnhUpload');
+        var pathInput = document.getElementById('AnhSpPath');
+        var hiddenAnhSp = document.querySelector('input[name="AnhSp"]');
+        var currentPath = hiddenAnhSp ? hiddenAnhSp.value : "";
+
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                pathInput.value = fileInput.files[0].name;
+            } else {
+                pathInput.value = currentPath;
+            }
+        });
+    });
+</script>
+}

@@ -1,11 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebBanGame.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
+using WebBanGame.Models;
 
 namespace WebBanGame.Controllers
 {
     public class NapTienController : Controller
-    {
+        {
+        private readonly BanGameBanQuyenContext _context;
+        public NapTienController(BanGameBanQuyenContext context)
+        {
+            _context = context;
+        }
+        // GET: NapTien
+        [HttpGet]
+    
         public IActionResult Index() => View();
 
         [HttpPost]
@@ -21,7 +30,24 @@ namespace WebBanGame.Controllers
 
             return View("QRPayment", model);
         }
+        public async Task<IActionResult> LichSuNapTien()
+        {
+            int maKh = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value); ; // Lấy mã khách hàng đang đăng nhập
+            var lichSuNap = await _context.NapTiens
+                .Where(n => n.IdUser == maKh)
+                .OrderByDescending(n => n.NgayNap)
+                .Select(n => new LichSuNapTienViewModel
+                {
+                    IdNapTien = n.IdNapTien,
+                    SoTienNap = n.SoTienNap,
+                    TrangThai = n.TrangThai,
+                    NgayNap = n.NgayNap,
+                    BankTransactionId = n.BankTransactionId
+                })
+                .ToListAsync();
 
+            return View(lichSuNap);
+        }
         [HttpPost]
         public IActionResult XacNhanDaThanhToan(decimal amount)
         {

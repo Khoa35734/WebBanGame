@@ -1,171 +1,224 @@
-﻿@model IEnumerable<WebBanGame.Models.SanPham>
-@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
-
-@{
-    ViewData["Title"] = "Index";
-
+﻿@{
+    ViewData["Title"] = "Tất cả game";
+       WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
 
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var tokens = Antiforgery.GetAndStoreTokens(Context);
-
 }
 
-<head>
-    <meta name="request-verification-token" content="@tokens.RequestToken" />
+@model IEnumerable<WebBanGame.Models.SanPham>
 
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>Danh sách sản phẩm</title>
-    <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css' rel='stylesheet'>
-    <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet'>
-    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
-    <script type='text/javascript' src='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js'></script>
-    <style>
-        body {
-            background: #eee;
-        }
+<h2>Tất cả game</h2>
 
-        .ratings i {
-            font-size: 16px;
-            color: red;
-        }
-
-        .strike-text {
-            color: red;
-            text-decoration: none;
-        }
-
-        .product-image {
-            width: 100%;
-        }
-
-        .spec-1 {
-            color: #938787;
-            font-size: 15px;
-        }
-
-        h5 {
-            font-weight: 400;
-        }
-
-        .para {
-            font-size: 16px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container mt-5 mb-5">
-        <div class="d-flex justify-content-center row">
-            <div class="col-md-10">
-                @{
-                    var gameView = Model.Where(x => x.TrangThai == true);
-                }
-                @foreach (var item in gameView)
-                {
-                    <div class="row p-2 bg-white border rounded mt-2">
-                        <div class="col-md-3 mt-1" style="margin:auto !important;">
-                            <img class="img-fluid img-responsive rounded product-image" src="@item.AnhSp" style="width:150px;">
-                        </div>
-                        <div class="col-md-6 mt-1">
-                            <h5>@item.TenSp</h5>
-                            <div class="d-flex flex-row">
-                                <div class="ratings mr-2">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                </div>
-                                <span>310</span>
-                            </div>
-                            <div class="mt-1 mb-1 spec-1">
-                                <span>Game @item.MaDmNavigation.TenDm</span>
-                            </div>
-                            <p class="text-justify text-truncate para mb-0">@item.MotaSp<br><br></p>
-                        </div>
-                        <div class="align-items-center align-content-center col-md-3 border-left mt-1">
-                            <div class="d-flex flex-row align-items-center">
-                                <h5 class="mr-1" style="font-weight:900;">@item.GiaSp.ToString("#,##0") VNĐ</h5>
-                                <span class="strike-text">@item.GiaSp.ToString("#,##0") VNĐ</span>
-                            </div>
-                            <small class="text-success">Bán chạy</small>
-                            <div class="d-flex flex-column mt-4">
-                                <a asp-action="Details" asp-route-id="@item.MaSp" class="btn btn-primary btn-sm" st type="button">Xem</a>
-                                <button class="btn btn-outline-primary btn-sm mt-2" type="button" onclick="showPurchaseModal(@item.MaSp, '@item.TenSp', @item.GiaSp)">Mua Ngay</button>
-                            </div>
-                        </div>
+@if (Model != null && Model.Any())
+{
+    <div class="games-grid">
+        @foreach (var game in Model)
+        { game.MaDmNavigation = db.DanhMucSps.FirstOrDefault(dm => dm.MaDm == game.MaDm);
+            var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
+            var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME MỚI";
+            var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
+            <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="game-card-link">
+                <div class="game-card">
+                    <img class="game-thumb" src="@game.AnhSp" alt="@game.TenSp" />
+                    <div class="game-tags">
+                        <span class="@tag">@tagText</span>
+                        <span class="tag-update">Update: @updateDate</span>
                     </div>
-                }
-            </div>
+                    <div class="game-title">@game.TenSp</div>
+                     <div class="game-meta">
+            <i class="fa fa-gamepad"></i>
+           @if (game.MaDmNavigation != null)
+            {
+                <span>@game.MaDmNavigation.TenDm</span>
+            }
+            else
+            {
+                <span>Không có danh mục</span>
+            }
+           
         </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="purchaseModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="purchaseModalLabel">Xác nhận mua hàng</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <div class="game-actions">
+                        <div class="btn-download"><i class="fa fa-download"></i> @game.GiaSp.ToString("#,##0") VNĐ</div>
+                        <div class="score-badge"><i class="fa fa-star"></i> Xem Chi tiết</div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <p>Bạn có chắc chắn muốn mua <strong id="productName"></strong> với giá <strong id="productPrice"></strong>?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" id="confirmPurchaseButton">Xác nhận</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function showPurchaseModal(id, name, price) {
-            document.getElementById("productName").textContent = name;
-            document.getElementById("productPrice").textContent = price.toLocaleString("vi-VN") + " VNĐ";
-
-            // Gán product ID vào nút xác nhận
-            document.getElementById("confirmPurchaseButton").setAttribute("data-product-id", id);
-
-            $('#purchaseModal').modal('show');
+            </a>
         }
+    </div>
+}
+else
+{
+    <div class="no-results">
+        Không có game nào để hiển thị.
+    </div>
+}
 
-        document.getElementById("confirmPurchaseButton").addEventListener("click", function () {
-            const productId = this.getAttribute("data-product-id");
+<style>
+    /* Giao diện cho lưới game */
+    .games-grid {
+        display: flex; /* Sử dụng Flexbox */
+        flex-wrap: wrap; /* Dòng mới nếu không đủ chỗ */
+        gap: 16px; /* Khoảng cách giữa các thẻ */
+        justify-content: flex-start; /* Căn lề trái */
+        padding: 0 16px;
+    }
 
-            fetch('/Order/Purchase', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('meta[name="request-verification-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ productId: productId })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Hiển thị thông báo
-                        alert(data.message);
+    a {
+        text-decoration: none; /* Loại bỏ gạch chân mặc định */
+    }
 
-                        // Gắn link vào modal
-                        const modalBody = document.querySelector("#purchaseModal .modal-body");
-                        modalBody.innerHTML = `
-                            <p>Mua thành công <strong>${data.productName}</strong>.</p>
-                            ${data.downloadLinks.map(link => `<a href="${link}" class="btn btn-success mt-2" target="_blank">Tải xuống sản phẩm</a>`).join("<br>")}
-                        `;
+    a:hover {
+        text-decoration: none; /* Giữ nguyên khi hover */
+    }
 
-                        // Ẩn nút xác nhận
-                        document.getElementById("confirmPurchaseButton").style.display = "none";
-                    } else {
-                        alert("Lỗi: " + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi xử lý giao dịch.");
-                });
-        });
-    </script>
-</body>
+    .game-card {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        padding: 15px;
+        text-align: left; /* Căn trái nội dung trong card */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        /* Cố định chiều rộng */
+        width: 380px; /* Mỗi thẻ chiếm 1/3 chiều rộng */
+        max-width: 100%; /* Đảm bảo không vượt quá chiều rộng container */
+        flex: 1 1 380px; /* Linh hoạt trong Flexbox */
+    }
+
+    .game-card:hover {
+        box-shadow: 0 6px 18px 0 rgba(36, 37, 38, .13);
+    }
+
+    .game-thumb {
+        width: 100%;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        border-radius: 12px 12px 12px 12px;
+    }
+
+    .game-card:hover .game-thumb {
+        transform: scale(1.05); /* Phóng to ảnh khi rê chuột */
+        border-radius: 12px 12px 20px 20px; /* Cắt tròn góc dưới hơn khi hover */
+    }
+
+    .game-tags {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        margin-left: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .tag-build,
+    .tag-ver,
+    .tag-new {
+        font-size: 0.89rem;
+        font-weight: bold;
+        background: #45e081;
+        color: #fff;
+        border-radius: 6px;
+        padding: 2px 10px;
+        display: inline-block;
+    }
+
+    .tag-build {
+        background: #63e6c6;
+    }
+
+    .tag-ver {
+        background: #8ee6ff;
+        color: #232b40;
+    }
+
+    .tag-new {
+        background: #45e081;
+    }
+
+    .tag-update {
+        font-size: 0.87rem;
+        color: #2666b2;
+        background: #e3f2ff;
+        border-radius: 5px;
+        padding: 2px 8px;
+        margin-left: 8px;
+        font-weight: 600;
+    }
+
+    .game-title {
+        font-size: 1.13rem;
+        font-weight: bold;
+        color: #204080;
+        margin: 10px 0 5px 12px;
+        display: block;
+        min-height: 33px;
+    }
+
+    .game-meta {
+        font-size: 0.98rem;
+        color: #406080;
+        margin: 0 0 8px 12px;
+        min-height: 40px;
+    }
+
+    .game-meta i {
+        color: #ff9f31;
+        margin-right: 4px;
+    }
+
+    .game-actions {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 0 12px;
+    }
+
+    .btn-download {
+        background: #232b40;
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        padding: 8px 22px;
+        font-size: 1rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(36, 37, 38, 0.07);
+        transition: background 0.18s;
+    }
+
+    .btn-download:hover {
+        background: #ff6241;
+    }
+
+    .score-badge {
+        background: #232b40;
+        color: #ffcc2a;
+        border: none;
+        border-radius: 7px;
+        padding: 8px 18px 8px 13px;
+        font-size: 1rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 0;
+    }
+
+    .score-badge i {
+        color: #ffcc2a;
+        font-size: 1rem;
+    }
+
+    .no-results {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 18px;
+        color: #666;
+    }
+</style>

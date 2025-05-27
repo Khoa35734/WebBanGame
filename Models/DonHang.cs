@@ -9,13 +9,13 @@ public partial class DonHang
 
     public int MaKh { get; set; }
 
-    public DateTime NgayTao { get; set; }
+    public DateOnly NgayTao { get; set; }
 
     public bool TrangThaiHuyDon { get; set; }
 
     public bool ThanhToan { get; set; }
 
-    public DateTime NgayThanhToan { get; set; }
+    public DateOnly NgayThanhToan { get; set; }
 
     public string? Note { get; set; }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+
 namespace WebBanGame.Models;
 
 public partial class BanGameBanQuyenContext : DbContext
@@ -25,11 +25,13 @@ public partial class BanGameBanQuyenContext : DbContext
 
     public virtual DbSet<KhachHang> KhachHangs { get; set; }
 
+    public virtual DbSet<NapTien> NapTiens { get; set; }
+
     public virtual DbSet<SanPham> SanPhams { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=ADMIN-PC\\MSSQLSERVER02;Initial Catalog=BanGameBanQuyen;Persist Security Info=True;User ID=sa;Password=khoaphamby;Encrypt=True;Trust Server Certificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=ADMIN-PC\\MSSQLSERVER02;Initial Catalog=BanGameBanQuyen;Persist Security Info=True;User ID=sa;Password=khoaphamby;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -80,7 +82,6 @@ public partial class BanGameBanQuyenContext : DbContext
             entity.ToTable("DanhMucSP");
 
             entity.Property(e => e.MaDm).HasColumnName("MaDM");
-            entity.Property(e => e.AnhDm).HasColumnName("AnhDM");
             entity.Property(e => e.MoTaDm)
                 .HasMaxLength(500)
                 .HasColumnName("MoTaDM");
@@ -123,6 +124,22 @@ public partial class BanGameBanQuyenContext : DbContext
             entity.Property(e => e.TenTaiKhoan).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<NapTien>(entity =>
+        {
+            entity.HasKey(e => e.IdNapTien);
+
+            entity.ToTable("NapTien");
+
+            entity.Property(e => e.BankTransactionId).HasMaxLength(50);
+            entity.Property(e => e.NgayNap).HasColumnType("datetime");
+            entity.Property(e => e.SoTienNap).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TrangThai).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.NapTiens)
+                .HasForeignKey(d => d.IdUser)
+                .HasConstraintName("FK_NapTien_KhachHang");
+        });
+
         modelBuilder.Entity<SanPham>(entity =>
         {
             entity.HasKey(e => e.MaSp).HasName("PK__SanPham__2725081C37D0281D");
@@ -137,7 +154,6 @@ public partial class BanGameBanQuyenContext : DbContext
             entity.Property(e => e.TenSp)
                 .HasMaxLength(200)
                 .HasColumnName("TenSP");
-            entity.Property(e => e.VideoSp).HasColumnName("VideoSP");
 
             entity.HasOne(d => d.MaDmNavigation).WithMany(p => p.SanPhams)
                 .HasForeignKey(d => d.MaDm)

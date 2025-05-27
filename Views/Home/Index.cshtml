@@ -2,7 +2,7 @@
     ViewData["Title"] = "Home Page";
     WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
     var gameHot = db.SanPhams.Where(x => x.BestSeller == true);
-    var danhSachGame = db.SanPhams.Take(4).ToList(); // Lấy 4 game đầu tiên
+    var danhSachGame = db.SanPhams.Take(6).ToList(); // Lấy 4 game đầu tiên
       
 }
 
@@ -43,29 +43,38 @@ a:hover {
     text-decoration: none; /* Thêm gạch chân khi hover nếu cần */
 }
  .custom-slider-container {
-        position: relative;
-        width: 100%; /* Full width of the container */
-        max-width: 1200px; /* Optional: limit the maximum width */
-        margin: 0 auto; /* Center the slider */
-        overflow: hidden; /* Hide overflowing images */
-        border-radius: 20px; /* Bo tròn khung slider */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow */
-    }
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: 400px; /* hoặc chiều cao mong muốn */
+}
 
- .custom-slider-slide {
-        display: none; /* Hide all slides initially */
-        width: 100%;
-    }
+.custom-slider-slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1);
+    z-index: 1;
+    pointer-events: none;
+}
 
- .custom-slider-slide.active {
-        display: block; /* Show the active slide */
-    }
+.custom-slider-slide.active {
+    opacity: 1;
+    z-index: 2;
+    pointer-events: auto;
+}
 
-    .custom-slider-slide img {
-        width: 100%; /* Make image take full width of the slider */
-        height: auto; /* Preserve aspect ratio */
-        border-radius: 20px; /* Bo tròn góc ảnh */
-    }
+.custom-slider-slide img {
+    width: 100%;
+    height: 100%; /* Đảm bảo ảnh vừa khung */
+    object-fit: cover;
+    border-radius: 20px;
+}
 
 
     .custom-slider-arrow {
@@ -341,10 +350,10 @@ background: #fff; /* Màu nền trắng */
 <!-- content -->
 <div class="content">
     <div style="background: #eef7fd;">
-        <div class="section-title"> <span>GAMES</span> MỚI </div>
+        <div class="section-title"> <span>GAMES</span> HOT </div>
          <div class="game-list-header">
             <div></div>
-            <a href="#">Xem tất cả &gt;</a>
+      <a href="@Url.Action("BestSellerList", "SanPham")">Xem tất cả &gt;</a>
         </div>
         <hr class="section-title-bar" />
        
@@ -356,11 +365,11 @@ background: #fff; /* Màu nền trắng */
                 // Nếu dùng Razor page, thay đổi cho phù hợp
            
             }
-          @foreach (var game in danhSachGame)
+         @foreach (var game in danhSachGame.OrderBy(g => g.MaSp).Take(6))
 {
      game.MaDmNavigation = db.DanhMucSps.FirstOrDefault(dm => dm.MaDm == game.MaDm);
     var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
-    var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME MỚI";
+    var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME HOT";
     var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
     <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="game-card-link">
         <div class="game-card">
@@ -394,10 +403,10 @@ background: #fff; /* Màu nền trắng */
             <!-- game list section -->
     <div style="background: #eef7fd;">
         <div style="background: #eef7fd;">
-        <div class="section-title"> <span>GAMES</span> MỚI </div>
+        <div class="section-title"> <span>GAMES</span>  </div>
          <div class="game-list-header">
             <div></div>
-            <a href="#">Xem tất cả &gt;</a>
+            <a href="/SanPham/Index">Xem tất cả &gt;</a>
         </div>
         <hr class="section-title-bar" />
         <div class="games-grid">
@@ -407,7 +416,7 @@ background: #fff; /* Màu nền trắng */
                     game.MaDmNavigation = db.DanhMucSps.FirstOrDefault(dm => dm.MaDm == game.MaDm);
 
                  var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
-    var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME MỚI";
+    var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME";
     var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
     <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="game-card-link">
         <div class="game-card">

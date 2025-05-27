@@ -11,27 +11,24 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="MaDm" class="control-label">Chọn thể loại game</label>
-                <select asp-for="MaDm" class ="form-control" asp-items="ViewBag.MaDm"></select>
+                <select asp-for="MaDm" class="form-control" asp-items="ViewBag.MaDm"></select>
             </div>
             <div class="form-group">
                 <label asp-for="TenSp" class="control-label">Tên Game</label>
                 <input asp-for="TenSp" class="form-control" />
                 <span asp-validation-for="TenSp" class="text-danger"></span>
             </div>
+            <!-- Upload ảnh -->
             <div class="form-group">
-                <label asp-for="AnhSp" class="control-label">Link Ảnh Game</label>
-                <input asp-for="AnhSp" class="form-control" />
+                <label class="control-label">Upload Ảnh Game</label>
+                <input type="file" name="AnhUpload" class="form-control" accept="image/*" />
                 <span asp-validation-for="AnhSp" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="VideoSp" class="control-label">Link Video Game</label>
-                <input asp-for="VideoSp" class="form-control" />
-                <span asp-validation-for="VideoSp" class="text-danger"></span>
-            </div>
+            <!-- XÓA trường Video Game ở đây -->
             <div class="form-group">
                 <label asp-for="GiaSp" class="control-label">Giá</label>
                 <input asp-for="GiaSp" class="form-control" />
@@ -47,22 +44,13 @@
                     <input class="form-check-input" asp-for="BestSeller" /> Game Bán Chạy
                 </label>
             </div>
+     
+            <!-- Xóa input cho ngày tạo/ngày sửa -->
             <div class="form-group">
-                <label asp-for="CreateDate" class="control-label">Ngày Tạo</label>
-                <input asp-for="CreateDate" class="form-control" />
-                <span asp-validation-for="CreateDate" class="text-danger"></span>
+                <label asp-for="MotaSp" class="control-label">Mô Tả Game</label>
+                <textarea asp-for="MotaSp" class="form-control" rows="10"></textarea>
+                <span asp-validation-for="MotaSp" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="NgaySua" class="control-label">Ngày Sửa</label>
-                <input asp-for="NgaySua" class="form-control" />
-                <span asp-validation-for="NgaySua" class="text-danger"></span>
-            </div>
-           <div class="form-group">
-    <label asp-for="MotaSp" class="control-label">Mô Tả Game</label>
-    <textarea asp-for="MotaSp" class="form-control" rows="10"></textarea>
-    <span asp-validation-for="MotaSp" class="text-danger"></span>
-</div>
-
             <div class="form-group">
                 <label asp-for="LinkDownGame" class="control-label">Link Tải Game</label>
                 <input asp-for="LinkDownGame" class="form-control" />
@@ -78,4 +66,3 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-

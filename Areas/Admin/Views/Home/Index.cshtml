@@ -1,80 +1,149 @@
-﻿
-@{
-    ViewData["Title"] = "Index";
+﻿@{
+    ViewData["Title"] = "Thống kê";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    // Dữ liệu mẫu - chỉ tính đến tháng 6
+    var months = new[] { "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6" };
+    var visits = new[] { 120, 150, 200, 180, 250, 300 };
+    var orders = new[] { 30, 35, 40, 38, 45, 60 };
+    var revenues = new[] { 2000000, 2500000, 3200000, 2800000, 3500000, 4200000 };
+    // Tổng số liệu tháng 6 (chỉ tháng mới nhất)
+    var latestMonthIndex = months.Length - 1;
+    var latestMonth = months[latestMonthIndex];
+    var latestVisits = visits[latestMonthIndex];
+    var latestOrders = orders[latestMonthIndex];
+    var latestRevenue = revenues[latestMonthIndex];
 }
-       
-            <div class="container-fluid">
-                <!-- ============================================================== -->
-                <!-- Three charts -->
-                <!-- ============================================================== -->
-                <div class="row justify-content-center">
-                    <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Lượng Truy Cập</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash"><canvas width="67" height="30"
-                                            style="display: inline-block; width: 67px; height: 30px; vertical-align: top;"></canvas>
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-success">659</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Lượt Phản Hồi</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash2"><canvas width="67" height="30"
-                                            style="display: inline-block; width: 67px; height: 30px; vertical-align: top;"></canvas>
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-purple">869</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Game Đã Bán</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash3"><canvas width="67" height="30"
-                                            style="display: inline-block; width: 67px; height: 30px; vertical-align: top;"></canvas>
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-info">911</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- ============================================================== -->
-                <!-- PRODUCTS YEARLY SALES -->
-                <!-- ============================================================== -->
-                <div class="row">
-                    <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        <div class="white-box">
-                            <h3 class="box-title">Thiết Bị Truy Cập</h3>
-                            <div class="d-md-flex">
-                                <ul class="list-inline d-flex ms-auto">
-                                    <li class="ps-3">
-                                        <h5><i class="fa fa-circle me-1 text-info"></i>Mac</h5>
-                                    </li>
-                                    <li class="ps-3">
-                                        <h5><i class="fa fa-circle me-1 text-inverse"></i>Windows</h5>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div id="ct-visits" style="height: 405px;">
-                                <div class="chartist-tooltip" style="top: -17px; left: -12px;"><span
-                                        class="chartist-tooltip-value">6</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container-fluid">
+    <!-- Tổng hợp theo tháng mới nhất (tháng 6) -->
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="white-box analytics-info text-center">
+                <h5 class="box-title mb-2">Lượt truy cập @latestMonth</h5>
+                <span class="counter text-primary" style="font-size:2em;font-weight:700;">@latestVisits</span>
             </div>
-    
-           
+        </div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="white-box analytics-info text-center">
+                <h5 class="box-title mb-2">Lượt mua @latestMonth</h5>
+                <span class="counter text-success" style="font-size:2em;font-weight:700;">@latestOrders</span>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12 mb-3">
+            <div class="white-box analytics-info text-center">
+                <h5 class="box-title mb-2">Doanh thu @latestMonth</h5>
+                <span class="counter text-info" style="font-size:2em;font-weight:700;">
+                    @latestRevenue.ToString("N0") VNĐ
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- Các biểu đồ -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-6 mb-4">
+            <div class="white-box analytics-info">
+                <h3 class="box-title">Biểu đồ số lượt truy cập đến tháng 6</h3>
+                <canvas id="visitsChart" height="120"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="white-box analytics-info">
+                <h3 class="box-title">Biểu đồ số lượt mua hàng đến tháng 6</h3>
+                <canvas id="ordersChart" height="120"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-12 mb-4">
+            <div class="white-box analytics-info">
+                <h3 class="box-title">Biểu đồ doanh thu theo tháng đến tháng 6</h3>
+                <canvas id="revenueChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Gán dữ liệu từ Razor vào JS
+    var months = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(months));
+    var visits = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(visits));
+    var orders = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(orders));
+    var revenues = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(revenues));
+
+    // Biểu đồ lượt truy cập
+    new Chart(document.getElementById('visitsChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Lượt truy cập',
+                data: visits,
+                fill: false,
+                borderColor: '#36a2eb',
+                backgroundColor: '#36a2eb',
+                tension: 0.3,
+                pointRadius: 4,
+                pointBackgroundColor: '#36a2eb'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Biểu đồ lượt mua hàng
+    new Chart(document.getElementById('ordersChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Lượt mua',
+                data: orders,
+                backgroundColor: '#ff6384'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Biểu đồ doanh thu
+    new Chart(document.getElementById('revenueChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Doanh thu (VNĐ)',
+                data: revenues,
+                backgroundColor: '#4bc0c0'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let value = context.parsed.y;
+                            return value.toLocaleString("vi-VN") + " VNĐ";
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString("vi-VN") + " VNĐ";
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>

@@ -17,6 +17,7 @@
     <div class="games-grid">
         @foreach (var game in Model.Games)
         {
+            game.MaDmNavigation = db.DanhMucSps.FirstOrDefault(dm => dm.MaDm == game.MaDm);
              var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
     var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME MỚI";
     var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
@@ -28,7 +29,18 @@
                 <span class="tag-update">Update: @updateDate</span>
             </div>
             <div class="game-title">@game.TenSp</div>
-          
+          <div class="game-meta">
+            <i class="fa fa-gamepad"></i>
+           @if (game.MaDmNavigation != null)
+            {
+                <span>@game.MaDmNavigation.TenDm</span>
+            }
+            else
+            {
+                <span>Không có danh mục</span>
+            }
+           
+        </div>
             <div class="game-actions">
                 <div class="btn-download"><i class="fa fa-download"></i> @game.GiaSp.ToString("#,##0") VNĐ</div>
                 <div class="score-badge"><i class="fa fa-star"></i> Xem Chi tiết</div>
