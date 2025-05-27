@@ -119,7 +119,10 @@
                                             <tr>
                                             <td><img src="@item.AnhSp" style="width:40px;"/>@item.TenSp</td>
                                             <td>@item.GiaSp</td>
-                                            <td> @item.MaDmNavigation.TenDm</td>
+                                            <td> @foreach (var dm in item.DanhMucs)
+{
+    <span>@dm.TenDm</span><br />
+}</td>
                                            <td> @Html.DisplayFor(modelItem => item.TrangThai)</td>
                                            <td> @Html.DisplayFor(modelItem => item.BestSeller)</td>
                                            <td> @item.CreateDate</td>

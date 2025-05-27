@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+
 namespace WebBanGame.Models;
 
 public partial class BanGameBanQuyenContext : DbContext
@@ -25,11 +25,13 @@ public partial class BanGameBanQuyenContext : DbContext
 
     public virtual DbSet<KhachHang> KhachHangs { get; set; }
 
+    public virtual DbSet<NapTien> NapTiens { get; set; }
+
     public virtual DbSet<SanPham> SanPhams { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=ADMIN-PC\\MSSQLSERVER02;Initial Catalog=BanGameBanQuyen;Persist Security Info=True;User ID=sa;Password=khoaphamby;Encrypt=True;Trust Server Certificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=ADMIN-PC\\MSSQLSERVER02;Initial Catalog=BanGameBanQuyen;Persist Security Info=True;User ID=sa;Password=khoaphamby;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -80,7 +82,6 @@ public partial class BanGameBanQuyenContext : DbContext
             entity.ToTable("DanhMucSP");
 
             entity.Property(e => e.MaDm).HasColumnName("MaDM");
-            entity.Property(e => e.AnhDm).HasColumnName("AnhDM");
             entity.Property(e => e.MoTaDm)
                 .HasMaxLength(500)
                 .HasColumnName("MoTaDM");
@@ -114,6 +115,9 @@ public partial class BanGameBanQuyenContext : DbContext
             entity.Property(e => e.Diachi).HasMaxLength(500);
             entity.Property(e => e.Email).HasMaxLength(200);
             entity.Property(e => e.MatKhau).HasMaxLength(50);
+            entity.Property(e => e.Phone)
+                .HasMaxLength(25)
+                .IsUnicode(false);
             entity.Property(e => e.SoDuTk)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("SoDuTK");
@@ -121,6 +125,22 @@ public partial class BanGameBanQuyenContext : DbContext
                 .HasMaxLength(200)
                 .HasColumnName("TenKH");
             entity.Property(e => e.TenTaiKhoan).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<NapTien>(entity =>
+        {
+            entity.HasKey(e => e.IdNapTien);
+
+            entity.ToTable("NapTien");
+
+            entity.Property(e => e.BankTransactionId).HasMaxLength(50);
+            entity.Property(e => e.NgayNap).HasColumnType("datetime");
+            entity.Property(e => e.SoTienNap).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TrangThai).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.NapTiens)
+                .HasForeignKey(d => d.IdUser)
+                .HasConstraintName("FK_NapTien_KhachHang");
         });
 
         modelBuilder.Entity<SanPham>(entity =>
@@ -132,16 +152,29 @@ public partial class BanGameBanQuyenContext : DbContext
             entity.Property(e => e.MaSp).HasColumnName("MaSP");
             entity.Property(e => e.AnhSp).HasColumnName("AnhSP");
             entity.Property(e => e.GiaSp).HasColumnName("GiaSP");
-            entity.Property(e => e.MaDm).HasColumnName("MaDM");
             entity.Property(e => e.MotaSp).HasColumnName("MotaSP");
             entity.Property(e => e.TenSp)
                 .HasMaxLength(200)
                 .HasColumnName("TenSP");
-            entity.Property(e => e.VideoSp).HasColumnName("VideoSP");
 
-            entity.HasOne(d => d.MaDmNavigation).WithMany(p => p.SanPhams)
-                .HasForeignKey(d => d.MaDm)
-                .HasConstraintName("FK__SanPham__MotaSP__3B75D760");
+            entity.HasMany(d => d.DanhMucs).WithMany(p => p.Games)
+                .UsingEntity<Dictionary<string, object>>(
+                    "GameDanhMuc",
+                    r => r.HasOne<DanhMucSp>().WithMany()
+                        .HasForeignKey("DanhMucId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__Game_Danh__DanhM__7A672E12"),
+                    l => l.HasOne<SanPham>().WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__Game_Danh__GameI__797309D9"),
+                    j =>
+                    {
+                        j.HasKey("GameId", "DanhMucId").HasName("PK__Game_Dan__8B7DAC7A7B3B837F");
+                        j.ToTable("Game_DanhMuc");
+                        j.IndexerProperty<int>("GameId").HasColumnName("GameID");
+                        j.IndexerProperty<int>("DanhMucId").HasColumnName("DanhMucID");
+                    });
         });
 
         OnModelCreatingPartial(modelBuilder);

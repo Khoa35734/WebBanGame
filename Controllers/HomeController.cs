@@ -1,13 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using WebBanGame.Models;
-
 namespace WebBanGame.Controllers
 {
     public class HomeController : Controller
@@ -21,7 +16,11 @@ namespace WebBanGame.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var danhSachGame = _context.SanPhams
+    .Include(g => g.DanhMucs)
+    .OrderBy(g => g.MaSp).Take(6)
+    .ToList();
+            return View(danhSachGame);
         }
 
         public IActionResult Privacy()

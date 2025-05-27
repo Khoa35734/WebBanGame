@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using WebBanGame.Models;
 namespace WebBanGame.Controllers
 
@@ -21,29 +22,56 @@ namespace WebBanGame.Controllers
         // GET: SanPham
         public async Task<IActionResult> Index()
         {
-            var banGameBanQuyenContext = _context.SanPhams.Include(s => s.MaDmNavigation);
-            return View(await banGameBanQuyenContext.ToListAsync());
+            var danhSachGame = _context.SanPhams
+         .Include(g => g.DanhMucs)
+         .OrderBy(g => g.MaSp)
+         .ToList();
+            return View(danhSachGame);
         }
 
         // GET: SanPham/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int id)
         {
-            if (id == null)
-            {
+            var game = _context.SanPhams
+                .Include(sp => sp.DanhMucs)
+                .FirstOrDefault(sp => sp.MaSp == id);
+
+            if (game == null)
                 return NotFound();
+
+            int? userId = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                // Lấy id user từ claim/session tùy hệ thống của bạn
+                // Ví dụ: userId = int.Parse(User.FindFirst("UserId").Value);
+                userId = GetCurrentUserId(); // bạn tự viết hàm này theo hệ thống đăng nhập
             }
 
-            var sanPham = await _context.SanPhams
-                .Include(s => s.MaDmNavigation)
-                .FirstOrDefaultAsync(m => m.MaSp == id);
-            if (sanPham == null)
+            bool daMua = false;
+            string linkTaiVe = game.LinkDownGame ?? "#";
+
+            if (userId.HasValue)
             {
-                return NotFound();
+                daMua = _context.DonHangs
+                    .Where(dh => dh.MaKh == userId.Value && dh.ThanhToan)
+                    .SelectMany(dh => dh.ChiTietDonHangs)
+                    .Any(ct => ct.MaSp == id);
             }
 
-            return View(sanPham);
+            ViewBag.DaMua = daMua;
+            ViewBag.LinkTaiVe = linkTaiVe;
+
+            return View(game);
         }
-
+        private int? GetCurrentUserId()
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (claim != null && int.TryParse(claim.Value, out int userId))
+            {
+                return userId;
+            }
+            return null;
+        }
         // GET: SanPham/Create
         public IActionResult Create()
         {
@@ -64,24 +92,40 @@ namespace WebBanGame.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MaDm"] = new SelectList(_context.DanhMucSps, "MaDm", "TenDm", sanPham.MaDm);
+            ViewData["MaDm"] = new SelectList(_context.DanhMucSps, "MaDm", "TenDm", sanPham.DanhMucs);
             return View(sanPham);
         }
-        public IActionResult Search(string q)
+        // Controller
+        public IActionResult Search(string query)
         {
-            // Lọc game theo tên
             var games = _context.SanPhams
-                          .Where(g => g.TenSp.Contains(q) || string.IsNullOrEmpty(q)) // Nếu q rỗng, trả về tất cả
-                          .ToList();
+                .Include(g => g.DanhMucs)
+                .Where(g => g.TenSp.Contains(query))
+                .ToList();
 
-            // Tạo ViewModel
-            var viewModel = new SearchViewModel
+            var model = new SearchViewModel
             {
-                Query = q,
+                Query = query,
                 Games = games
             };
+            return View(model);
+        }
+        public async Task<ActionResult> BestSellerList(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            return View("Search", viewModel); // Truyền ViewModel vào View
+            var sanPham = await _context.SanPhams
+                .Include(s => s.DanhMucs)
+                .FirstOrDefaultAsync(m => m.MaSp == id && m.BestSeller == true);
+            if (sanPham == null)
+            {
+                return NotFound();
+            }
+
+            return View(sanPham);
         }
         public ActionResult SearchDm(int danhMucId)
         {
@@ -90,13 +134,13 @@ namespace WebBanGame.Controllers
            
 
             var games = _context.SanPhams
-                .Where(sp => sp.MaDm == danhMucId)
+                .Where(sp => sp.DanhMucs.Any(dm => dm.MaDm == danhMucId))
                 .ToList();
 
             // Tạo ViewModel để truyền dữ liệu đến View
             var viewModel = new SearchDmViewModel
             {
-                DanhMuc = danhMuc,
+                DanhMuc = danhMuc,  // hoặc property phù hợp
                 Games = games
             };
 
@@ -116,7 +160,8 @@ namespace WebBanGame.Controllers
             {
                 return NotFound();
             }
-            ViewData["MaDm"] = new SelectList(_context.DanhMucSps, "MaDm", "TenDm", sanPham.MaDm);
+            var selectedMaDm = sanPham.DanhMucs?.Select(dm => dm.MaDm) ?? new List<int>();
+            ViewData["MaDm"] = new MultiSelectList(_context.DanhMucSps, "MaDm", "TenDm", selectedMaDm);
             return View(sanPham);
         }
 
@@ -152,7 +197,8 @@ namespace WebBanGame.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MaDm"] = new SelectList(_context.DanhMucSps, "MaDm", "TenDm", sanPham.MaDm);
+            var selectedMaDm = sanPham.DanhMucs?.Select(dm => dm.MaDm) ?? new List<int>();
+            ViewData["MaDm"] = new MultiSelectList(_context.DanhMucSps, "MaDm", "TenDm", selectedMaDm);
             return View(sanPham);
         }
 
@@ -165,7 +211,7 @@ namespace WebBanGame.Controllers
             }
 
             var sanPham = await _context.SanPhams
-                .Include(s => s.MaDmNavigation)
+                .Include(s => s.DanhMucs)
                 .FirstOrDefaultAsync(m => m.MaSp == id);
             if (sanPham == null)
             {
@@ -188,7 +234,6 @@ namespace WebBanGame.Controllers
         public class MuaGameRequest { public int GameId { get; set; } }
         [HttpPost]
 
-      
         [ValidateAntiForgeryToken]
      
         public JsonResult MuaGame([FromBody] MuaGameRequest req)
@@ -223,10 +268,10 @@ namespace WebBanGame.Controllers
                 var order = new DonHang
                 {
                     MaKh = customer.MaKh,
-                    NgayTao = DateTime.Now,
+                    NgayTao = DateOnly.FromDateTime(DateTime.Now),
                     TrangThaiHuyDon = false,
                     ThanhToan = true,
-                    NgayThanhToan = DateTime.Now,
+                    NgayThanhToan = DateOnly.FromDateTime(DateTime.Now),
                     Note = "Mua game thành công!"
                 };
                 _context.DonHangs.Add(order);

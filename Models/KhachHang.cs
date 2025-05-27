@@ -13,8 +13,6 @@ public partial class KhachHang
 
     public DateOnly Ngaysinh { get; set; }
 
-    public int Phone { get; set; }
-
     public string Email { get; set; } = null!;
 
     public DateOnly CreateDate { get; set; }
@@ -25,5 +23,9 @@ public partial class KhachHang
 
     public decimal? SoDuTk { get; set; }
 
+    public string? Phone { get; set; }
+
     public virtual ICollection<DonHang> DonHangs { get; set; } = new List<DonHang>();
+
+    public virtual ICollection<NapTien> NapTiens { get; set; } = new List<NapTien>();
 }

@@ -1,9 +1,11 @@
 ﻿@model WebBanGame.Models.SanPham
 
-
 @{
-	ViewData["Title"] = "Details";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool daMua = ViewBag.DaMua ?? false;
+    string linkTaiVe = ViewBag.LinkTaiVe as string ?? "#";
+    bool isLoggedIn = User.Identity.IsAuthenticated;
 }
 
 <style>
@@ -13,14 +15,14 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background:#eaf6ff;
+		background:rgba(0, 0, 0, 0.5);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		z-index: 999;
 	}
 	.body {
-        background-color:   #eaf6ff; /* Màu trắng */
+        background-color:   #eaf6ff;
     }
 	.confirm-box {
 		background:   #eaf6ff;
@@ -54,7 +56,12 @@
 	.product__photo {
 		position: relative;
 	}
-
+	.game-image {
+		width: 90%;
+		height: 90%;
+		border-radius: 12px 12px 12px 12px;
+		overflow: hidden;
+	}
 	.photo-container {
 		position: absolute;
 		left: 2em;
@@ -88,7 +95,7 @@
 			font-size: 2.9em;
 		}
 
-.buy--btn {
+	.buy--btn {
 		padding: 1.5em 3.1em;
 		border: none;
 		border-radius: 7px;
@@ -117,132 +124,137 @@
 	.mota-content iframe {
 		max-width: 100%;
 		margin: 10px 0;
-
 	}
 	.gallery {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-		.gallery img {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+	.gallery img {
         width: 1296px;
         margin: 10px;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-
-        .gallery img:hover {
-            transform: scale(1.05);
-        }
+    .gallery img:hover {
+        transform: scale(1.05);
+    }
 </style>
 
 <div class="container">
-<section class="product">
-	<div class="product__photo">
-		<div class="game-image">
-			<img src="@Model.AnhSp" alt="Game Image">
-		</div>
-	</div>
-	<div class="product__info">
-		<div class="title">
-			<h1 style="font-weight:bold; font-size:60px;">@Model.TenSp</h1>
-			<span>COD: 45999</span>
-		</div>
-		<div class="price">
-			<span style="font-size:40px; font-weight:bold;">@Model.GiaSp.ToString("#,##0")</span> VNĐ
-		</div>
-		<div class="description">
-			<h3>THỂ LOẠI:</h3>
-			<ul>
-				<li>@Model.MaDmNavigation.TenDm</li>
-			</ul>
-		</div>
-		<div class="description">
-			<h3>THÔNG TIN:</h3>
-			<ul>
-		
-				<li>Ngày phát hành: @Model.CreateDate.ToString("dd/MM/yyyy")</li>
-			</ul>
-		</div>
-		          
-		<button class="buy--btn" onclick="showConfirmForm()">MUA NGAY</button>
-		
-		<!-- Container for error messages -->
-		<div id="errorContainer"></div>
-	 
-		<!-- Form xác nhận mua -->
-		<div id="confirmForm" class="confirm-overlay" style="display:none;">
-			<div class="confirm-box">
-				<p>Bạn có chắc chắn muốn mua game này?</p>
-				<button type="button" id="confirmPurchaseButton" class="btn btn-success" data-game-id="@Model.MaSp">Xác nhận</button>
-				<button type="button" class="btn btn-secondary" onclick="hideConfirmForm()">Hủy</button>
-			</div>
-		</div>
+    <section class="product">
+        <div class="product__photo">
+            <div class="game-image">
+                <img src="@Model.AnhSp" alt="Game Image">
+            </div>
+        </div>
+        <div class="product__info">
+            <div class="title">
+                <h1 style="font-weight:bold; font-size:60px;">@Model.TenSp</h1>
+                <span>COD: @Model.MaSp</span>
+            </div>
+            <div class="price">
+                <span style="font-size:40px; font-weight:bold;">@Model.GiaSp.ToString("#,##0")</span> VNĐ
+            </div>
+            <div class="description">
+                <h3>THỂ LOẠI:</h3>
+                <ul>
+                    @foreach (var dm in Model.DanhMucs)
+{
+    <li>@dm.TenDm</li>
+}
+                </ul>
+            </div>
+            <div class="description">
+                <h3>THÔNG TIN:</h3>
+                <ul>
+                    <li>Ngày phát hành: @Model.CreateDate.ToString("dd/MM/yyyy")</li>
+                </ul>
+            </div>
 
-		<!-- Form hiển thị thông báo thành công -->
-		<div id="successForm" class="confirm-overlay" style="display:none;">
-			<div class="confirm-box">
-				<p id="successMessage">Bạn đã mua game thành công!</p>
-				<a id="downloadLink" href="#" class="btn btn-primary" target="_blank">Tải game</a>
-				<button type="button" class="btn btn-secondary" onclick="hideSuccessForm()">Đóng</button>
-			</div>
-		</div>
-	</div>
-		
-</section>
+            @if (!daMua)
+            {
+                <button class="buy--btn" onclick="handleBuyClick()">MUA NGAY</button>
 
-<div class="description">
-			
-			<div class="mota-content">
-				     @Html.Raw(Model.MotaSp)
-			</div>
-		</div>
- 
+                <div id="errorContainer"></div>
+
+                <div id="confirmForm" class="confirm-overlay" style="display:none;">
+                    <div class="confirm-box">
+                        <p>Bạn có chắc chắn muốn mua game này?</p>
+                        <button type="button" id="confirmPurchaseButton" class="btn btn-success" data-game-id="@Model.MaSp">Xác nhận</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideConfirmForm()">Hủy</button>
+                    </div>
+                </div>
+
+                <div id="successForm" class="confirm-overlay" style="display:none;">
+                    <div class="confirm-box">
+                        <p id="successMessage">Bạn đã mua game thành công!</p>
+                        <a id="downloadLink" href="#" class="btn btn-primary" target="_blank">Tải game</a>
+                        <button type="button" class="btn btn-secondary" onclick="hideSuccessForm()">Đóng</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+<div style="margin-top:40px;">
+        <a href="@linkTaiVe" class="buy--btn" style="background:#28a745;" target="_blank">TẢI VỀ</a>
+    </div>      }
+        </div>
+    </section>
+
+    <div class="description">
+        <div class="mota-content">
+            @Html.Raw(Model.MotaSp)
+        </div>
+    </div>
+</div>
+
 <script>
-	function showConfirmForm() {
-		const confirmForm = document.getElementById("confirmForm");
-		if (confirmForm) {
-			confirmForm.style.display = "flex";
-		} else {
-			console.error("Confirm form not found.");
-		}
-	}
+    var isLoggedIn = @isLoggedIn.ToString().ToLower();
 
-	function hideConfirmForm() {
-		const confirmForm = document.getElementById("confirmForm");
-		if (confirmForm) {
-			confirmForm.style.display = "none";
-		} else {
-			console.error("Confirm form not found.");
-		}
-	}
+    function handleBuyClick() {
+        if (!isLoggedIn) {
+            window.location.href = '@Url.Action("DangNhap", "Account")';
+        } else {
+            showConfirmForm();
+        }
+    }
 
-	function showSuccessForm(message, downloadLink) {
-		const successForm = document.getElementById("successForm");
-		const successMessage = document.getElementById("successMessage");
-		const link = document.getElementById("downloadLink");
+    function showConfirmForm() {
+        const confirmForm = document.getElementById("confirmForm");
+        if (confirmForm) {
+            confirmForm.style.display = "flex";
+        }
+    }
 
-		if (successForm && successMessage && link) {
-			successMessage.textContent = message;
-			link.href = downloadLink;
-			successForm.style.display = "flex";
-		} else {
-			console.error("Success form elements not found.");
-		}
-	}
+    function hideConfirmForm() {
+        const confirmForm = document.getElementById("confirmForm");
+        if (confirmForm) {
+            confirmForm.style.display = "none";
+        }
+    }
 
-	function hideSuccessForm() {
-		const successForm = document.getElementById("successForm");
-		if (successForm) {
-			successForm.style.display = "none";
-		} else {
-			console.error("Success form not found.");
-		}
-	}
+    function showSuccessForm(message, downloadLink) {
+        const successForm = document.getElementById("successForm");
+        const successMessage = document.getElementById("successMessage");
+        const link = document.getElementById("downloadLink");
 
-	// Xử lý sự kiện xác nhận mua game
-	document.getElementById("confirmPurchaseButton").addEventListener("click", function () {
+        if (successForm && successMessage && link) {
+            successMessage.textContent = message;
+            link.href = downloadLink;
+            successForm.style.display = "flex";
+        }
+    }
+
+    function hideSuccessForm() {
+        const successForm = document.getElementById("successForm");
+        if (successForm) {
+            successForm.style.display = "none";
+        }
+    }
+
+    document.getElementById("confirmPurchaseButton").addEventListener("click", function () {
 		const gameId = this.getAttribute("data-game-id");
 		const errorContainer = document.getElementById("errorContainer");
 

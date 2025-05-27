@@ -26,9 +26,7 @@
         <dt class = "col-sm-2">
            Video Game:
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VideoSp)
-        </dd>
+       
         <dt class = "col-sm-2">
             Giá Game:
         </dt>
@@ -75,7 +73,10 @@
            Tên Danh Mục:
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaDmNavigation.TenDm)
+@foreach (var dm in Model.DanhMucs)
+{
+    <span>@dm.TenDm</span><br />
+}
         </dd>
     </dl>
     
