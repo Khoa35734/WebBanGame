@@ -1,6 +1,9 @@
-﻿@model IEnumerable<WebBanGame.Models.SanPham>
+﻿@model IEnumerable<WebBanGame.Controllers.SanPhamWithSoLanBanViewModel>
 @{
     ViewData["Title"] = "Home Page";
+    var games = Model.OrderByDescending(g => g.SoLanBan).Take(6).ToList();
+    var topGame = games.FirstOrDefault();
+    var sideGames = games.Skip(1).ToList();
 }
 
 <!-- Image Slider -->
@@ -27,93 +30,91 @@
 </div>
 
 <!-- content -->
-<div class="content">
-    <div style="background: #eef7fd;">
-        <div class="section-title"> <span>GAMES</span> HOT </div>
-        <div class="game-list-header">
-            <div></div>
-            <a href="@Url.Action("BestSellerList", "SanPham")">Xem tất cả &gt;</a>
-        </div>
-        <hr class="section-title-bar" />
-        <div class="games-grid">
-            @foreach (var game in Model.OrderBy(g => g.MaSp).Take(6))
+<div class="gameshot-section">
+    <div class="section-title"><span>GAMES</span> HOT</div>
+    <div class="gameshot-row">
+        <!-- Main game hot card -->
+        <div class="gameshot-main">
+            @if (topGame != null)
             {
-                var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
-                var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME HOT";
-                var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
-                <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="game-card-link">
-                    <div class="game-card">
-                        <img class="game-thumb" src="@game.AnhSp" alt="@game.TenSp" />
-                        <div class="game-tags">
-                            <span class="@tag">@tagText</span>
-                            <span class="tag-update">Update: @updateDate</span>
+                <div class="gameshot-main-card">
+                    <div class="gameshot-main-img-wrap">
+                        <img class="gameshot-main-thumb" src="@topGame.AnhSp" alt="@topGame.TenSp" />
+                        <div class="gameshot-main-tags">
+                            <span class="main-tag">UPDATE v1.30 Full</span>
+                            <span class="update-tag">Update: @(topGame.NgaySua.ToString("dd/MM/yyyy"))</span>
                         </div>
-                        <div class="game-title">@game.TenSp</div>
-                        <div class="game-meta">
-                            <i class="fa fa-gamepad"></i>
-                           @if (game.DanhMucs != null && game.DanhMucs.Any())
-{
-    <span>
-        @string.Join(", ", game.DanhMucs.Select(dm => dm.TenDm))
-    </span>
-}
-else
-{
-    <span>Không có danh mục</span>
-}
+                    </div>
+                    <div class="gameshot-main-content">
+                        <div class="gameshot-main-title">
+                            <a href="@Url.Action("Details", "SanPham", new { id = topGame.MaSp })">@topGame.TenSp</a>
                         </div>
-                        <div class="game-actions">
-                            <div class="btn-download"><i class="fa fa-download"></i> @game.GiaSp.ToString("#,##0") VNĐ</div>
-                            <div class="score-badge"><i class="fa fa-star"></i> Xem Chi tiết</div>
-                        </div>
+                        <a class="gameshot-main-btn" href="@Url.Action("Details", "SanPham", new { id = topGame.MaSp })">XEM CHI TIẾT</a>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- Side games list -->
+        <div class="gameshot-side">
+            @foreach(var game in sideGames)
+            {
+                <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="gameshot-side-card" title="@game.TenSp">
+                    <img class="gameshot-side-thumb" src="@game.AnhSp" alt="@game.TenSp" />
+                    <div class="gameshot-side-info">
+                        <div class="gameshot-side-title">@game.TenSp</div>
                     </div>
                 </a>
             }
         </div>
     </div>
+</div>
+        <!-- Side list -->
+       
 
-    <div style="background: #eef7fd;">
-        <div class="section-title"> <span>GAMES</span> </div>
-        <div class="game-list-header">
-            <div></div>
-            <a href="/SanPham/Index">Xem tất cả &gt;</a>
-        </div>
-        <hr class="section-title-bar" />
-        <div class="games-grid">
-            @foreach (var game in Model)
-            {
-                var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
-                var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME";
-                var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
-                <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="game-card-link">
-                    <div class="game-card">
-                        <img class="game-thumb" src="@game.AnhSp" alt="@game.TenSp" />
-                        <div class="game-tags">
-                            <span class="@tag">@tagText</span>
-                            <span class="tag-update">Update: @updateDate</span>
-                        </div>
-                        <div class="game-title">@game.TenSp</div>
-                        <div class="game-meta">
-                            <i class="fa fa-gamepad"></i>
-                          @if (game.DanhMucs != null && game.DanhMucs.Any())
-{
-    <span>
-        @string.Join(", ", game.DanhMucs.Select(dm => dm.TenDm))
-    </span>
-}
-else
-{
-    <span>Không có danh mục</span>
-}
-                        </div>
-                        <div class="game-actions">
-                            <div class="btn-download"><i class="fa fa-download"></i> @game.GiaSp.ToString("#,##0") VNĐ</div>
-                            <div class="score-badge"><i class="fa fa-star"></i> Xem Chi tiết</div>
-                        </div>
+<div style="background: #eef7fd;">
+    <div class="section-title"> <span>GAMES</span> </div>
+    <div class="game-list-header">
+        <div></div>
+        <a href="/SanPham/Index">Xem tất cả &gt;</a>
+    </div>
+   
+    <div class="games-grid">
+        @foreach (var game in Model.Take(6))
+        {
+            var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
+            var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME";
+            var updateDate = game.NgaySua.ToString("dd/MM/yyyy");
+            <a href="@Url.Action("Details", "SanPham", new { id = game.MaSp })" class="game-card-link">
+                <div class="game-card">
+                    <img class="game-thumb" src="@game.AnhSp" alt="@game.TenSp" />
+                    <div class="game-tags">
+                        <span class="@tag">@tagText</span>
+                        <span class="tag-update">Update: @updateDate</span>
                     </div>
-                </a>
-            }
-        </div>
+                    <div class="game-title">@game.TenSp</div>
+                    <div class="game-meta">
+                        <i class="fa fa-gamepad"></i>
+                        @if (game.DanhMucs != null && game.DanhMucs.Any())
+                        {
+                            <span>
+                                @string.Join(", ", game.DanhMucs.Select(dm => dm.TenDm))
+                            </span>
+                        }
+                        else
+                        {
+                            <span>Không có danh mục</span>
+                        }
+                    </div>
+                    <div class="game-actions">
+                        <div class="btn-download"><i class="fa fa-download"></i> @game.GiaSp.ToString("#,##0") VNĐ</div>
+                        <div class="score-badge"><i class="fa fa-star"></i> Xem Chi tiết</div>
+                    </div>
+                    <div style="font-size:0.97em;color:#f26522;font-weight:500;margin-top:6px;">
+                        Đã bán: @game.SoLanBan
+                    </div>
+                </div>
+            </a>
+        }
     </div>
 </div>
 
@@ -127,6 +128,8 @@ else
         </div>
     </div>
 </div>
+
+<!-- (Style & Slider JS giữ nguyên như bạn đã có ở trên, không đổi) -->
 
 <style>
     a {
@@ -378,6 +381,155 @@ else
         color: #ffcc2a;
         font-size: 1rem;
     }
+    .gameshot-section {
+    background: #eaf6ff;
+    border-radius: 12px;
+    padding: 12px 0 20px 0;
+    margin-bottom: 24px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.section-title {
+    font-size: 1.45rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #f26522;
+    display: flex;
+    align-items: center;
+    border-bottom: 5px solid #f26522;
+    margin-bottom: 18px;
+    padding-left: 14px;
+    background: transparent;
+}
+.section-title span {
+    color: #1576c9;
+    margin-right: 8px;
+}
+
+.gameshot-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.gameshot-main {
+    flex: 1 1 60%;
+    min-width: 325px;
+    max-width: 64%;
+}
+.gameshot-side {
+    flex: 1 1 36%;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.gameshot-main-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px #c7e6fd;
+    overflow: hidden;
+    padding-bottom: 18px;
+}
+.gameshot-main-img-wrap {
+    position: relative;
+}
+.gameshot-main-thumb {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+.gameshot-main-tags {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 2;
+}
+.main-tag {
+    background: #e74c3c;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 4px 14px;
+    font-size: 0.98em;
+    margin-bottom: 2px;
+}
+.update-tag {
+    background: #48b6fd;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.93em;
+}
+.gameshot-main-content {
+    padding: 16px 18px 0 18px;
+}
+.gameshot-main-title {
+    font-size: 1.18em;
+    font-weight: bold;
+    margin-bottom: 7px;
+    color: #1a233a;
+}
+.gameshot-main-title a {
+    color: #1a233a;
+    text-decoration: none;
+}
+.gameshot-main-btn {
+    background: #1576c9;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 7px;
+    padding: 9px 20px;
+    font-size: 1em;
+    text-decoration: none;
+    transition: background 0.15s;
+    display: inline-block;
+}
+.gameshot-main-btn:hover {
+    background: #105a98;
+    color: #fff;
+}
+.gameshot-side-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 9px;
+    box-shadow: 0 2px 10px #d3ebfe;
+    padding: 6px 8px 6px 6px;
+    min-width: 0;
+    transition: box-shadow .15s;
+    gap: 8px;
+}
+.gameshot-side-card:hover {
+    box-shadow: 0 4px 14px #a3d3f9;
+}
+.gameshot-side-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 7px;
+    object-fit: cover;
+    margin-right: 9px;
+}
+.gameshot-side-info {
+    flex: 1 1 0;
+    min-width: 0;
+}
+.gameshot-side-title {
+    font-weight: bold;
+    color: #1870c2;
+    font-size: 1.01em;
+    margin-bottom: 3px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 </style>
 
 <script>

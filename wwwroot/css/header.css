@@ -16,7 +16,7 @@
     border-bottom: 0px solid #eaeaea; /* No border at the bottom */
     padding-bottom: 6px; /* Padding at the bottom */
     max-width: 1300px; /* Maximum width */
-    margin: 0 auto; /* Center the header */
+    margin-left: 10vw; /* Center the header */
 }
 
 .user-dropdown-content {

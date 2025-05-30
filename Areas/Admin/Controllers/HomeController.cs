@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-
 using System;
 using System.Linq;
 using WebBanGame.Models;
@@ -16,27 +16,43 @@ namespace WebBanGame.Areas.Admin.Controllers
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
+            // Lấy top 5 game bán chạy nhất (dựa trên số lượt xuất hiện trong ChiTietDonHang)
+            var topGames = _context.ChiTietDonHangs
+                .Include(ct => ct.MaSpNavigation)
+                .GroupBy(ct => new { ct.MaSp, ct.MaSpNavigation.TenSp, ct.MaSpNavigation.AnhSp })
+                .Select(g => new
+                {
+                    TenSp = g.Key.TenSp,
+                    AnhSp = g.Key.AnhSp,
+                    TongHoaDon = g.Count()
+                })
+                .OrderByDescending(x => x.TongHoaDon)
+                .Take(5)
+                .ToList();
+            ViewBag.TopGames = topGames;
+
             int year = DateTime.Now.Year;
             string[] months = new string[12];
-            int[] visits = new int[12]; // Nếu không có bảng logs truy cập, để số mẫu hoặc tự xử lý
-            int[] orders = new int[12]; // Số lượt mua hàng/tháng (có thể lấy từ bảng DonHang)
-            decimal[] revenues = new decimal[12]; // Tổng số tiền nạp thành công/tháng
+            int[] visits = new int[12]; // Dữ liệu demo, bạn thay thế bằng logs thực tế nếu có
+            int[] orders = new int[12];
+            decimal[] revenues = new decimal[12];
 
             for (int i = 0; i < 12; i++)
             {
                 months[i] = $"Tháng {i + 1}";
 
-                // Số lượt truy cập (giả lập, bạn thay bằng truy vấn thật nếu có logs)
+                // Số lượt truy cập (giả lập, thay bằng truy vấn logs nếu có)
                 visits[i] = 100 + 15 * i;
 
-                // Số lượt mua hàng/tháng (giả sử lấy theo đơn hàng thanh toán thành công)
+                // Số lượt mua hàng/tháng (dựa vào DonHang đã thanh toán)
                 orders[i] = _context.DonHangs
                     .Where(dh => dh.NgayTao.Month == i + 1 && dh.NgayTao.Year == year && dh.ThanhToan)
                     .Count();
 
-                // Tổng doanh thu là tổng số tiền khách hàng nạp thành công theo tháng
+                // Tổng doanh thu/tháng (tổng số tiền nạp thành công)
                 revenues[i] = _context.NapTiens
                     .Where(n => n.NgayNap.HasValue
                                 && n.NgayNap.Value.Month == i + 1

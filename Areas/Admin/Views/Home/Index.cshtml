@@ -1,13 +1,16 @@
 ﻿@{
     ViewData["Title"] = "Thống kê";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-    // Dữ liệu mẫu - chỉ tính đến tháng 6
-    var months = new[] { "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6" };
-    var visits = new[] { 120, 150, 200, 180, 250, 300 };
-    var orders = new[] { 30, 35, 40, 38, 45, 60 };
-    var revenues = new[] { 2000000, 2500000, 3200000, 2800000, 3500000, 4200000 };
-    // Tổng số liệu tháng 6 (chỉ tháng mới nhất)
-    var latestMonthIndex = months.Length - 1;
+
+    // Lấy dữ liệu từ ViewBag (từ Controller truyền sang)
+    var months = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>((string)ViewBag.Months);
+    var visits = Newtonsoft.Json.JsonConvert.DeserializeObject<int[]>((string)ViewBag.Visits);
+    var orders = Newtonsoft.Json.JsonConvert.DeserializeObject<int[]>((string)ViewBag.Orders);
+    var revenues = Newtonsoft.Json.JsonConvert.DeserializeObject<decimal[]>((string)ViewBag.Revenues);
+    var topGames = ViewBag.TopGames as IEnumerable<dynamic>;
+
+    // Xác định tháng mới nhất có dữ liệu (thường là tháng 6 trở về trước, nếu dữ liệu mẫu thì lấy tháng cuối cùng)
+    int latestMonthIndex = months.Length - 1;
     var latestMonth = months[latestMonthIndex];
     var latestVisits = visits[latestMonthIndex];
     var latestOrders = orders[latestMonthIndex];
@@ -18,7 +21,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="container-fluid">
-    <!-- Tổng hợp theo tháng mới nhất (tháng 6) -->
+    <!-- Tổng hợp theo tháng mới nhất -->
     <div class="row mb-4">
         <div class="col-lg-4 col-md-6 mb-3">
             <div class="white-box analytics-info text-center">
@@ -41,23 +44,54 @@
             </div>
         </div>
     </div>
+
+    <!-- Top game bán chạy nhất -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="white-box analytics-info">
+                <h3 class="box-title mb-4">Top Game Bán Chạy Nhất</h3>
+                <div class="row">
+                    @if (topGames != null)
+                    {
+                        foreach (var game in topGames)
+                        {
+                            <div class="col-md-4 col-lg-2 mb-3">
+                                <div class="card h-100 shadow border-0">
+                                    <img src="@game.AnhSp" alt="@game.TenSp" class="card-img-top" style="object-fit:cover;aspect-ratio:4/3;border-radius:8px 8px 0 0;">
+                                    <div class="card-body text-center p-2">
+                                        <div class="fw-bold" style="font-size:1.1em;">@game.TenSp</div>
+                                        <div class="text-muted" style="font-size:0.99em;">@game.TongHoaDon đơn hàng</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center">Không có dữ liệu game bán chạy.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Các biểu đồ -->
     <div class="row justify-content-center mt-4">
         <div class="col-lg-6 mb-4">
             <div class="white-box analytics-info">
-                <h3 class="box-title">Biểu đồ số lượt truy cập đến tháng 6</h3>
+                <h3 class="box-title">Biểu đồ số lượt truy cập theo tháng</h3>
                 <canvas id="visitsChart" height="120"></canvas>
             </div>
         </div>
         <div class="col-lg-6 mb-4">
             <div class="white-box analytics-info">
-                <h3 class="box-title">Biểu đồ số lượt mua hàng đến tháng 6</h3>
+                <h3 class="box-title">Biểu đồ số lượt mua hàng theo tháng</h3>
                 <canvas id="ordersChart" height="120"></canvas>
             </div>
         </div>
         <div class="col-lg-12 mb-4">
             <div class="white-box analytics-info">
-                <h3 class="box-title">Biểu đồ doanh thu theo tháng đến tháng 6</h3>
+                <h3 class="box-title">Biểu đồ doanh thu theo tháng</h3>
                 <canvas id="revenueChart" height="120"></canvas>
             </div>
         </div>
@@ -66,10 +100,10 @@
 
 <script>
     // Gán dữ liệu từ Razor vào JS
-    var months = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(months));
-    var visits = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(visits));
-    var orders = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(orders));
-    var revenues = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(revenues));
+    var months = @Html.Raw(ViewBag.Months);
+    var visits = @Html.Raw(ViewBag.Visits);
+    var orders = @Html.Raw(ViewBag.Orders);
+    var revenues = @Html.Raw(ViewBag.Revenues);
 
     // Biểu đồ lượt truy cập
     new Chart(document.getElementById('visitsChart').getContext('2d'), {

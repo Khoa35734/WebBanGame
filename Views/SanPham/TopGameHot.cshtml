@@ -90,7 +90,7 @@
                     <div class="game-title">@game.TenSp</div>
                     <div class="game-price">@game.GiaSp.ToString("#,##0") VNĐ</div>
                     <div class="game-orders">Đã bán: <b>@game.SoLuongBan</b> lượt</div>
-                    <a class="buy-btn" href="@Url.Action("Details", "SanPham", new { id = game.MaSp })">Xem chi tiết</a>
+                    <a class="buy-btn" href="@Url.Action("ChiTiet", "SanPham", new { id = game.MaSp })">Xem chi tiết</a>
                 </div>
             </div>
         }

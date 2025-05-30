@@ -24,9 +24,9 @@
             <b>DONATE</b> Web bán game uy tín Số 1 DUT
         </span>
     <form asp-action="Search" asp-controller="SanPham" method="get" style="flex: 1; display: flex; justify-content: center; align-items: center; margin: 0 12px;">
-    <input type="text" name="q" placeholder="Nhập tên game" 
+    <input type="text" name="query" placeholder="Nhập tên game" 
            style="border-radius: 5px 0 0 5px; border: 1px solid #ccc; height: 38px; width: 320px; padding: 0 12px; font-size: 16px;" 
-           value="@ViewData["SearchQuery"]">
+           value="@ViewData["Query"]">
     <button type="submit" 
             style="border-radius: 0 5px 5px 0; height: 38px; width: 42px; background: #222; color: #fff; border: none; cursor: pointer;">
         <i class="fa fa-search"></i>
@@ -92,7 +92,7 @@
             <img src="/images/logo.png" alt="Logo" style="height: 72px; margin-right: 12px;" />
         </a>
         <nav style="display: flex; justify-content: center; align-items: center; gap: 32px;
-                    margin-top: 18px; font-size: 20px; font-weight: 700;">
+                    margin-top: 18px;  margin-left: auto;font-size: 20px; font-weight: 700;">
             <span style="color: #d21e32;">MỚI</span>
 
            <div class="dropdown">

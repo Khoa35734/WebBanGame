@@ -78,7 +78,25 @@ namespace WebBanGame.Controllers
             ViewData["MaDm"] = new SelectList(_context.DanhMucSps, "MaDm", "TenDm");
             return View();
         }
+        public IActionResult TopGameHot()
+        {
+            var topGames = _context.ChiTietDonHangs
+                .Include(ct => ct.MaSpNavigation)
+                .GroupBy(ct => new { ct.MaSp, ct.MaSpNavigation.TenSp, ct.MaSpNavigation.AnhSp, ct.MaSpNavigation.GiaSp })
+                .Select(g => new
+                {
+                    MaSp = g.Key.MaSp,
+                    TenSp = g.Key.TenSp,
+                    AnhSp = g.Key.AnhSp,
+                    GiaSp = g.Key.GiaSp,
+                    SoLuongBan = g.Count()
+                })
+                .OrderByDescending(x => x.SoLuongBan)
+                .Take(8)
+                .ToList();
 
+            return View(topGames);
+        }
         // POST: SanPham/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
