@@ -55,45 +55,15 @@ namespace WebBanGame.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SanPham sanPham, IFormFile AnhUpload, int[] SelectedDanhMucIds)
+        public async Task<IActionResult> Create([Bind("MaSp,MaDm,TenSp,AnhSp,VideoSp,GiaSp,TrangThai,BestSeller,CreateDate,NgaySua,MotaSp,LinkDownGame")] SanPham sanPham)
         {
-            // Validate danh mục
-            if (SelectedDanhMucIds == null || SelectedDanhMucIds.Length == 0)
-                ModelState.AddModelError("SelectedDanhMucIds", "Bạn phải chọn ít nhất 1 danh mục.");
-
-            // Xử lý upload ảnh và gán AnhSp TRƯỚC validate ModelState
-            if (AnhUpload != null && AnhUpload.Length > 0)
-            {
-                var fileName = Path.GetFileNameWithoutExtension(AnhUpload.FileName)
-                             + "_" + Guid.NewGuid().ToString("N")
-                             + Path.GetExtension(AnhUpload.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/games", fileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await AnhUpload.CopyToAsync(stream);
-                }
-                sanPham.AnhSp = "/images/games/" + fileName;
-            }
-
-            if (string.IsNullOrEmpty(sanPham.AnhSp))
-                ModelState.AddModelError("AnhSp", "Bạn phải chọn ảnh game!");
-
-
             if (ModelState.IsValid)
             {
-                sanPham.CreateDate = DateOnly.FromDateTime(DateTime.Now);
-                sanPham.NgaySua = DateOnly.FromDateTime(DateTime.Now);
-                sanPham.DanhMucs = _context.DanhMucSps
-                    .Where(dm => SelectedDanhMucIds.Contains(dm.MaDm)).ToList();
-
                 _context.Add(sanPham);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
-            // Nạp lại ViewBag nếu có lỗi
-            ViewBag.MaDm = _context.DanhMucSps.ToList();
-            ViewBag.SelectedDanhMucIds = SelectedDanhMucIds?.ToList() ?? new List<int>();
+            ViewData["MaDm"] = new SelectList(_context.DanhMucSps, "MaDm", "TenDm", sanPham.MaDm);
             return View(sanPham);
         }
 
@@ -137,58 +107,22 @@ namespace WebBanGame.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(SanPhamEditViewModel model, IFormFile? AnhUpload)
+        public async Task<IActionResult> Edit(int id, [Bind("MaSp,MaDm,TenSp,AnhSp,VideoSp,GiaSp,TrangThai,BestSeller,CreateDate,NgaySua,MotaSp,LinkDownGame")] SanPham sanPham)
         {
             // Validate: Bắt buộc chọn ít nhất 1 danh mục
             if (model.SelectedDanhMucs == null || !model.SelectedDanhMucs.Any())
             {
-                ModelState.AddModelError("SelectedDanhMucs", "Bạn phải chọn ít nhất một danh mục.");
+                return NotFound();
             }
 
-            // Nếu có lỗi, nạp lại danh mục cho ViewModel rồi trả lại view
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                model.AllDanhMucs = await _context.DanhMucSps
-                    .Select(dm => new SelectListItem
-                    {
-                        Value = dm.MaDm.ToString(),
-                        Text = dm.TenDm
-                    }).ToListAsync();
-
-                return View(model);
-            }
-
-            // Lấy sản phẩm hiện tại
-            var sanPham = await _context.SanPhams
-                .Include(sp => sp.DanhMucs)
-                .FirstOrDefaultAsync(sp => sp.MaSp == model.MaSp);
-
-            if (sanPham == null) return NotFound();
-
-            // Cập nhật thông tin cơ bản
-            sanPham.TenSp = model.TenSp;
-            sanPham.GiaSp = model.GiaSp;
-            sanPham.TrangThai = model.TrangThai;
-            sanPham.BestSeller = model.BestSeller;
-            sanPham.CreateDate = model.CreateDate;
-            sanPham.NgaySua = DateOnly.FromDateTime(DateTime.Now);
-            sanPham.LinkDownGame = model.LinkDownGame;
-            sanPham.MotaSp = model.MotaSp;
-
-            // Xử lý ảnh (nếu có upload mới)
-            if (AnhUpload != null && AnhUpload.Length > 0)
-            {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "games");
-                Directory.CreateDirectory(uploadsFolder); // đảm bảo folder tồn tại
-
-                var ext = Path.GetExtension(AnhUpload.FileName);
-                var fileName = Path.GetFileNameWithoutExtension(AnhUpload.FileName)
-                             + "_" + Guid.NewGuid().ToString("N")
-                             + ext;
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                // Lưu file
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                try
+                {
+                    _context.Update(sanPham);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
                 {
                     await AnhUpload.CopyToAsync(stream);
                 }

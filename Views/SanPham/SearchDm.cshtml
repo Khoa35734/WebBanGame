@@ -9,6 +9,7 @@
     <div class="games-grid">
         @foreach (var game in Model.Games)
         {
+             game.MaDmNavigation = db.DanhMucSps.FirstOrDefault(dm => dm.MaDm == game.MaDm);
             var tag = game.MaSp % 2 == 0 ? "tag-build" : "tag-new";
             var tagText = game.MaSp % 2 == 0 ? $"Build {game.MaSp}" : "GAME MỚI";
             var updateDate = game.NgaySua.ToString("dd/MM/yyyy");

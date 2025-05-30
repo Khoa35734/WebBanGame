@@ -127,6 +127,23 @@ namespace WebBanGame.Controllers
 
             return View(sanPham);
         }
+        public async Task<ActionResult> BestSellerList(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var sanPham = await _context.SanPhams
+                .Include(s => s.MaDmNavigation)
+                .FirstOrDefaultAsync(m => m.MaSp == id && m.BestSeller == true);
+            if (sanPham == null)
+            {
+                return NotFound();
+            }
+
+            return View(sanPham);
+        }
         public ActionResult SearchDm(int danhMucId)
         {
             // Lấy danh sách các game thuộc danh mục
