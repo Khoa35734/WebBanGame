@@ -127,6 +127,7 @@ namespace WebBanGame.Controllers
 
             return View(sanPham);
         }
+     
         public ActionResult SearchDm(int danhMucId)
         {
             // Lấy danh sách các game thuộc danh mục

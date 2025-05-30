@@ -1,4 +1,11 @@
-﻿@model IEnumerable<WebBanGame.Models.SanPham>
+﻿@{
+    ViewData["Title"] = "Tất cả game";
+       WebBanGame.Models.BanGameBanQuyenContext db = new WebBanGame.Models.BanGameBanQuyenContext();
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<WebBanGame.Models.SanPham>
 @{
     ViewData["Title"] = "Tất cả game";
     Layout = "~/Views/Shared/_Layout.cshtml";

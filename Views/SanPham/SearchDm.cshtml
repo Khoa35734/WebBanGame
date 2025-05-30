@@ -22,16 +22,16 @@
                     <div class="game-title">@game.TenSp</div>
                     <div class="game-meta">
                         <i class="fa fa-gamepad"></i>
-                    @if (game.DanhMucs != null && game.DanhMucs.Any())
-{
-    <span>
-        @string.Join(", ", game.DanhMucs.Select(dm => dm.TenDm))
-    </span>
-}
-else
-{
-    <span>Không có danh mục</span>
-}
+                        @if (game.DanhMucs != null && game.DanhMucs.Any())
+                        {
+                            <span>
+                                @string.Join(", ", game.DanhMucs.Select(dm => dm.TenDm))
+                            </span>
+                        }
+                        else
+                        {
+                            <span>Không có danh mục</span>
+                        }
                     </div>
                     <div class="game-actions">
                         <div class="btn-download"><i class="fa fa-download"></i> @game.GiaSp.ToString("#,##0") VNĐ</div>
